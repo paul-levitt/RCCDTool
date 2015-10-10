@@ -24,5 +24,17 @@ namespace RCCDTool
         {
             InitializeComponent();
         }
+
+        private void DataGridColumnHeader_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            int nPerGroupCalc = (Int32.Parse(totalN.Text.ToString()) / Int32.Parse(numGroups.Text.ToString()));
+            nPerGroup.Text = nPerGroupCalc.ToString();
+        }
     }
 }
