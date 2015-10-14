@@ -5,22 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RCCDTool"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="536" Width="714">
     <Grid>
-        <TextBox x:Name="totalN" HorizontalAlignment="Left" Height="23" Margin="142,27,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="57"/>
+        <TextBox x:Name="totalN" HorizontalAlignment="Left" Height="23" Margin="166,27,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="67"/>
         <Label x:Name="label" Content="Total N:" HorizontalAlignment="Left" Margin="24,27,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="label1" Content="Number of groups:" HorizontalAlignment="Left" Margin="24,55,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="numGroups" HorizontalAlignment="Left" Height="23" Margin="142,58,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="57"/>
-        <Button x:Name="button" Content="Calculate" HorizontalAlignment="Left" Margin="142,101,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
-        <Label x:Name="nPerGroupLabel" Content="N per group: " HorizontalAlignment="Left" Margin="35,146,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="nPerGroup" HorizontalAlignment="Left" Height="23" Margin="142,146,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="57"/>
-        <GroupBox x:Name="groupBox" Header="Design" HorizontalAlignment="Left" Margin="288,27,0,0" VerticalAlignment="Top" Height="103" Width="207">
-            <Grid HorizontalAlignment="Right" Margin="0,7,15,3" Width="177">
-                <RadioButton x:Name="WS" Content="Within Subjects" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top"/>
-                <RadioButton x:Name="BS" Content="Between Subjects" HorizontalAlignment="Left" Margin="0,30,0,0" VerticalAlignment="Top"/>
-                <RadioButton x:Name="WBS" Content="Within and Between Subjects" HorizontalAlignment="Left" Margin="0,50,0,0" VerticalAlignment="Top" GroupName="Design"/>
-            </Grid>
-        </GroupBox>
+        <Label x:Name="label1" Content="Number of factors:" HorizontalAlignment="Left" Margin="24,55,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="numFactors" HorizontalAlignment="Left" Height="23" Margin="166,58,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="67"/>
+        <Button x:Name="button" Content="Calculate" HorizontalAlignment="Left" Margin="158,164,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
+        <Label x:Name="nPerGroupLabel" Content="N per group: " HorizontalAlignment="Left" Margin="73,215,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="nPerGroup" HorizontalAlignment="Left" Height="23" Margin="176,215,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="57"/>
+        <TextBox x:Name="numRM" HorizontalAlignment="Left" Height="23" Margin="166,86,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="67" IsEnabled="False"/>
+        <Label x:Name="RM" Content="# of Repeated Measures" HorizontalAlignment="Left" Margin="16,85,0,0" VerticalAlignment="Top" FontSize="10.667" Width="147"/>
+        <Label x:Name="designLabel2" Content="Design Selected: " HorizontalAlignment="Left" Margin="263,24,0,0" VerticalAlignment="Top" FontWeight="Bold" FontStyle="Italic"/>
+        <Label x:Name="designLabel" Content="" HorizontalAlignment="Left" Margin="363,24,0,0" VerticalAlignment="Top"/>
+        <Grid x:Name="factorGrid" HorizontalAlignment="Left" Height="431" Margin="346,64,0,0" VerticalAlignment="Top" Width="350" Background="#FFD1CCCC">
+            <Label x:Name="label2" Content="Factors" HorizontalAlignment="Left" Margin="144,0,0,0" VerticalAlignment="Top"/>
+            <Button x:Name="button1" Content="Edit Factors" HorizontalAlignment="Left" Margin="265,401,0,0" VerticalAlignment="Top" Width="75" Click="button1_Click"/>
+        </Grid>
 
     </Grid>
 </Window>

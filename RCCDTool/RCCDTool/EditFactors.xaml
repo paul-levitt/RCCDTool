@@ -1,0 +1,14 @@
+﻿<Window x:Class="RCCDTool.EditFactors"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RCCDTool"
+        mc:Ignorable="d"
+        Title="EditFactors" Height="481" Width="808">
+    <Grid>
+        <Grid x:Name="factorGrid" HorizontalAlignment="Left" Height="392" Margin="10,10,0,0" VerticalAlignment="Top" Width="780"/>
+        <Button x:Name="button" Content="Save and Close" HorizontalAlignment="Left" Margin="700,420,0,0" VerticalAlignment="Top" Width="90" Click="button_Click"/>
+
+    </Grid>
+</Window>
