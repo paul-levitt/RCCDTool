@@ -11,7 +11,7 @@ namespace RCCDTool
         private int _subjects;
         private int _groups;
         private int _repeatedMeasures;
-        private List<Factor> _factors;
+        private List<ResearchFactor> _factors;
 
         public WithinBetweenSubjectsDesign()
         {
@@ -19,7 +19,7 @@ namespace RCCDTool
             //this._subjects = subjects;
             //this._repeatedMeasures = repeatedMeasures;
             //this._groups = groups;
-            this._factors = new List<Factor>();
+            this._factors = new List<ResearchFactor>();
         }
 
 
@@ -47,7 +47,7 @@ namespace RCCDTool
             set { this._repeatedMeasures = value; }
         }
 
-        public List<Factor> Factors
+        public List<ResearchFactor> Factors
         {
             get { return _factors; }
             set { _factors = value; }
@@ -61,69 +61,5 @@ namespace RCCDTool
         #endregion
     }
 
-    struct Factor
-    {
-        private string _label;
-        private int _levels;
-        private bool _isWithinSubjects;
-        private bool _isRandomized;
-
-        public override string ToString()
-        {
-            return  _label + "; " + _levels.ToString() + "; isWS: " + _isWithinSubjects.ToString() + "; Rand: " + _isRandomized.ToString();
-        }
-        #region Getters/Setters
-        public int Levels
-        {
-            get
-            {
-                return _levels;
-            }
-
-            set
-            {
-                _levels = value;
-            }
-        }
-
-        public bool isWithinSubjects
-        {
-            get
-            {
-                return _isWithinSubjects;
-            }
-
-            set
-            {
-                _isWithinSubjects = value;
-            }
-        }
-
-        public string Label
-        {
-            get
-            {
-                return _label;
-            }
-
-            set
-            {
-                _label = value;
-            }
-        }
-
-        public bool IsRandomized
-        {
-            get
-            {
-                return _isRandomized;
-            }
-
-            set
-            {
-                _isRandomized = value;
-            }
-        } 
-        #endregion
-    }
+    
 }

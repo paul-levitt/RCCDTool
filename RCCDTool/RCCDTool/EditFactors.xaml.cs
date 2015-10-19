@@ -17,21 +17,21 @@ namespace RCCDTool
     /// <summary>
     /// Interaction logic for EditFactors.xaml
     /// </summary>
-    public partial class EditFactors : Window
+    partial class EditFactors : Window
     {
-        private List<Factor> _factors;
+        private List<ResearchFactor> _factors;
         private int _numFactors;
-        private MainWindow _mw;
+        private IController _controller;
         
-        public EditFactors(int numFactors, MainWindow mw)
+        public EditFactors(int numFactors, IController controller)
         {
             
             InitializeComponent();
             createGrid(numFactors);
             buildTable(numFactors);
-            _factors = new List<Factor>();
+            _factors = new List<ResearchFactor>();
             this._numFactors = numFactors;
-            this._mw = mw;
+            this._controller = controller;
         }
 
         private void createGrid(int numFactors)
@@ -147,7 +147,7 @@ namespace RCCDTool
             {
                 var itemsInFirstRow = factorGrid.Children.Cast<UIElement>().Where(a => Grid.GetRow(a) == i);
 
-                Factor newFactor = new Factor();
+                ResearchFactor newFactor = new ResearchFactor();
                 foreach (UIElement uie in itemsInFirstRow)
                 {
 
@@ -168,16 +168,16 @@ namespace RCCDTool
                         newFactor.IsRandomized = (bool)(uie as CheckBox).IsChecked;
                     }
                 }
-
+                this._controller.addFactor(newFactor);
                 _factors.Add(newFactor);
-                //MessageBox.Show("String: " + newFactor.ToString());
+                
             }
-            this._mw.updateFactorList(_factors);
+           
             this.Close();
         }
 
 
-        internal List<Factor> Factors
+        internal List<ResearchFactor> Factors
         {
             get
             {

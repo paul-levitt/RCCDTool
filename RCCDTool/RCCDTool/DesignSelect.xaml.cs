@@ -28,9 +28,12 @@ namespace RCCDTool
         {
             var checkedButton = designSelection.Children.OfType<RadioButton>().Where(r => r.IsChecked == true).FirstOrDefault();
             
-            MainWindow mw = new MainWindow(checkedButton.Content.ToString());
-            mw.Show();
+            Model model = new Model();
+            Controller controller = new Controller(model);
             this.Close();
+            //MainWindow mw = new MainWindow(checkedButton.Content.ToString(), model, controller);
+            //mw.Show();
+
         }
         
     }
