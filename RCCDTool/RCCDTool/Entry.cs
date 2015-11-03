@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RCCDTool
 {
@@ -11,7 +7,7 @@ namespace RCCDTool
         /// <summary>
         /// Application Entry Point.
         /// </summary>
-        [System.STAThreadAttribute()]
+        [STAThread]
         //[System.Diagnostics.DebuggerNonUserCodeAttribute()]
         //[System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "4.0.0.0")]
         static void Main(string[] args)

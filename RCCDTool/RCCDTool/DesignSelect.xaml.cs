@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace RCCDTool
 {
@@ -30,7 +20,7 @@ namespace RCCDTool
             
             Model model = new Model();
             Controller controller = new Controller(model);
-            this.Close();
+            Close();
             //MainWindow mw = new MainWindow(checkedButton.Content.ToString(), model, controller);
             //mw.Show();
 

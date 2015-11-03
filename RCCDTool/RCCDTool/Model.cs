@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RCCDTool
 {
@@ -16,7 +13,7 @@ namespace RCCDTool
 
         public Model()
         {
-            this.observers = new List<IObserver<ResearchFactor>>();
+            observers = new List<IObserver<ResearchFactor>>();
             //this._factors = new List<ResearchFactor>();
             ocr = new ObservableCollection<ResearchFactor>();
             ocr.CollectionChanged += notifyObservers;
@@ -31,20 +28,26 @@ namespace RCCDTool
 
         public void addFactor(ResearchFactor newFactor)
         {
-            this.ocr.Add(newFactor);
+            ocr.Add(newFactor);
             
             
         }
         public void removeFactor(ResearchFactor newFactor)
         {
-            this.ocr.Remove(newFactor);
+            ocr.Remove(newFactor);
         }
 
         public void notifyObservers(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Remove)
             {
-                
+                foreach (var o in observers)
+                {
+                    foreach (var item in e.OldItems)
+                    {
+                        o.OnNext((ResearchFactor)item);
+                    }
+                }
             }
             else if (e.Action == NotifyCollectionChangedAction.Add)
             {
@@ -58,14 +61,30 @@ namespace RCCDTool
             }
             else if(e.Action == NotifyCollectionChangedAction.Replace)
             {
-                //do something??
+                foreach (var o in observers)
+                {
+                    foreach (var item in e.NewItems)
+                    {
+                        o.OnNext((ResearchFactor)item);
+                    }
+                }
             }
 
 
-            foreach (var item in e.NewItems)
-            {
+            //foreach (var item in e.NewItems)
+            //{
                 
-            }
+            //}
+        }
+
+        public bool HasData => ocr != null && ocr.Count > 0;
+
+        public int NumFactors => ocr == null ? 0 : ocr.Count; //wow, how compact!!
+
+        public ObservableCollection<ResearchFactor> ResearchFactors => ocr;
+        public void ClearFactors()
+        {
+            ocr.Clear();
         }
     }
 }

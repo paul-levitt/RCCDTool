@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 
 namespace RCCDTool
 {
@@ -15,22 +12,49 @@ namespace RCCDTool
         
         public Controller(IModel model)
         {
-            this._model = model;
+            _model = model;
             
-            this._mw = new MainWindow("Within and Between Subjects", this._model, this);
+            _mw = new MainWindow("Within and Between Subjects", _model, this);
             model.Subscribe(_mw);
-            this._mw.Show();
+            _mw.Show();
             //System.Windows.Threading.Dispatcher.Run();
         }
 
         public void addFactor(ResearchFactor factor)
         {
-            this._model.addFactor(factor);
+            bool factorAlreadyExists = false;
+            foreach (var researchFactor in _model.ResearchFactors)
+            {
+                if (factor.Label == researchFactor.Label)
+                {
+                    factorAlreadyExists = true;
+                    break;
+                }
+                    
+            }
+
+            if(!factorAlreadyExists)
+                _model.addFactor(factor);
         }
 
         public void removeFactor(ResearchFactor factor)
         {
-            this._model.removeFactor(factor);
+            _model.removeFactor(factor);
+        }
+
+        public void AddSubscriber(IObserver<ResearchFactor> subscriber)
+        {
+            _model.Subscribe(subscriber);
+        }
+
+        public bool ModelHasData => _model.HasData;
+
+        public int NumFactors => _model.NumFactors;
+        public ObservableCollection<ResearchFactor> ResearchFactors => _model.ResearchFactors;
+
+        public void ClearFactors()
+        {
+            _model.ClearFactors();
         }
     }
 }

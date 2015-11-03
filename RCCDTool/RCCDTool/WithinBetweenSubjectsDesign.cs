@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RCCDTool
 {
@@ -19,7 +16,7 @@ namespace RCCDTool
             //this._subjects = subjects;
             //this._repeatedMeasures = repeatedMeasures;
             //this._groups = groups;
-            this._factors = new List<ResearchFactor>();
+            _factors = new List<ResearchFactor>();
         }
 
 
@@ -37,14 +34,14 @@ namespace RCCDTool
         #region Properties
         public int Subjects
         {
-            get { return this._subjects; }
-            set { this._subjects = value; }
+            get { return _subjects; }
+            set { _subjects = value; }
         }
 
         public int RepeatedMeasures
         {
-            get { return this._repeatedMeasures; }
-            set { this._repeatedMeasures = value; }
+            get { return _repeatedMeasures; }
+            set { _repeatedMeasures = value; }
         }
 
         public List<ResearchFactor> Factors

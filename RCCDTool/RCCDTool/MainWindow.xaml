@@ -18,10 +18,10 @@
         <Label x:Name="RM" Content="# of Repeated Measures" HorizontalAlignment="Left" Margin="16,85,0,0" VerticalAlignment="Top" FontSize="10.667" Width="147"/>
         <Label x:Name="designLabel2" Content="Design Selected: " HorizontalAlignment="Left" Margin="263,24,0,0" VerticalAlignment="Top" FontWeight="Bold" FontStyle="Italic"/>
         <Label x:Name="designLabel" Content="" HorizontalAlignment="Left" Margin="363,24,0,0" VerticalAlignment="Top"/>
-        <Grid x:Name="factorGrid" HorizontalAlignment="Left" Height="431" Margin="346,64,0,0" VerticalAlignment="Top" Width="350" Background="#FFD1CCCC">
+        <Grid x:Name="factorGrid" HorizontalAlignment="Left" Height="406" Margin="346,64,0,0" VerticalAlignment="Top" Width="350" Background="#FFD1CCCC">
             <Label x:Name="label2" Content="Factors" HorizontalAlignment="Left" Margin="144,0,0,0" VerticalAlignment="Top"/>
-            <Button x:Name="button1" Content="Edit Factors" HorizontalAlignment="Left" Margin="265,401,0,0" VerticalAlignment="Top" Width="75" Click="button1_Click"/>
         </Grid>
+        <Button x:Name="button1" Content="Edit Factors" HorizontalAlignment="Left" Margin="621,475,0,0" VerticalAlignment="Top" Width="75" Click="button1_Click"/>
 
     </Grid>
 </Window>

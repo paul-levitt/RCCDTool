@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 
 namespace RCCDTool
 {
@@ -10,5 +7,10 @@ namespace RCCDTool
     {
         void addFactor(ResearchFactor factor);
         void removeFactor(ResearchFactor factor);
+        void AddSubscriber(IObserver<ResearchFactor> subscriber);
+        bool ModelHasData { get; }
+        int NumFactors { get; }
+        ObservableCollection<ResearchFactor> ResearchFactors { get; }
+        void ClearFactors();
     }
 }

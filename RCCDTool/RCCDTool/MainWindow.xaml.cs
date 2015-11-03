@@ -1,17 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace RCCDTool
 {
@@ -32,17 +22,15 @@ namespace RCCDTool
         public MainWindow(string designSelection, IModel model, IController controller)
         {
             InitializeComponent();
-            this._factors = new List<ResearchFactor>();
-            this._designSelection = designSelection;
+            _factors = new List<ResearchFactor>();
+            _designSelection = designSelection;
             designLabel.Content += designSelection;
-            //this._model = model;
-            this._controller = controller;
-            //this._model.Subscribe(this);
+            _controller = controller;
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            int nPerGroupCalc = (Int32.Parse(totalN.Text.ToString()) / Int32.Parse(numFactors.Text.ToString()));
+            int nPerGroupCalc = (Int32.Parse(totalN.Text) / Int32.Parse(numFactors.Text));
             nPerGroup.Text = nPerGroupCalc.ToString();
         }
 
@@ -50,8 +38,9 @@ namespace RCCDTool
         {
             try
             {
-                int nf = int.Parse(numFactors.Text.ToString());
-                EditFactors ef = new EditFactors(nf, this._controller);
+                int nf = int.Parse(numFactors.Text);
+                EditFactors ef = new EditFactors(nf, _controller);
+                _controller.AddSubscriber(ef);
                 ef.Show();
                 //List<ResearchFactor> factors = ef.Factors;
                 //updateFactorList(factors);
@@ -59,11 +48,11 @@ namespace RCCDTool
             catch (FormatException exception)
             {
                 MessageBox.Show("Invalid entry for number of factors! Please enter an integer greater than 1.");
-                MessageBox.Show("Exception was:" + exception.ToString());
+                MessageBox.Show("Exception was:" + exception);
             }
             catch (Exception exception)
             {
-                MessageBox.Show("Exception was:" + exception.ToString());
+                MessageBox.Show("Exception was:" + exception);
             }
         }
 
@@ -71,8 +60,21 @@ namespace RCCDTool
         {
             //int nf = int.Parse(numFactors.Text.ToString());
             Label factorLabel;
+            factorGrid.Children.Clear();
+            MessageBox.Show("Num Factors: " + _factors.Count);
             
-            for (int i = 0; i < this._factors.Count; i++)
+            for (int i = 0; i < 4; i++)
+            {
+                factorGrid.ColumnDefinitions.Add(new ColumnDefinition());
+            }
+
+            for (int i = 0; i < _factors.Count; i++)
+            {
+                factorGrid.RowDefinitions.Add(new RowDefinition());
+            }
+            
+
+            for (int i = 0; i < _factors.Count; i++)
             {
                 factorGrid.RowDefinitions.Add(new RowDefinition());
                 factorLabel = new Label();
@@ -86,12 +88,14 @@ namespace RCCDTool
 
         public void OnNext(ResearchFactor value)
         {
-            if ((value != null) && (this._factors.Contains(value)))
+            //TODO: Fix factor updates. Currently, factors are NOT getting updated correctly in the main window. 
+            //They are not getting deleted as they should be.
+            if ((value != null) && (_factors.Contains(value)))
             {
-                this._factors.Remove(value);
+                _factors.Remove(value);
             }
-            else if((value != null) && (!this._factors.Contains(value))){
-                this._factors.Add(value);
+            else if((value != null) && (!_factors.Contains(value))){
+                _factors.Add(value);
             }
 
             updateFactorList();
