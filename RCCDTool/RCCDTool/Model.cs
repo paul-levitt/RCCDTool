@@ -26,6 +26,12 @@ namespace RCCDTool
             return null;
         }
 
+        public IDisposable Unsubscribe(IObserver<ResearchFactor> observer)
+        {
+            observers.Remove(observer);
+            return null;
+        }
+
         public void addFactor(ResearchFactor newFactor)
         {
             ocr.Add(newFactor);
@@ -84,7 +90,10 @@ namespace RCCDTool
         public ObservableCollection<ResearchFactor> ResearchFactors => ocr;
         public void ClearFactors()
         {
-            ocr.Clear();
+            while(ocr.Count >0)
+                ocr.Remove(ocr[0]);
+
+            //ocr.Clear();
         }
     }
 }

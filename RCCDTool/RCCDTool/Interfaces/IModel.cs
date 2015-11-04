@@ -13,5 +13,6 @@ namespace RCCDTool
         int NumFactors { get; }
         ObservableCollection<ResearchFactor> ResearchFactors { get; }
         void ClearFactors();
+        IDisposable Unsubscribe(IObserver<ResearchFactor> observer);
     }
 }

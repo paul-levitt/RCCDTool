@@ -10,7 +10,7 @@ namespace RCCDTool
     /// <summary>
     /// Interaction logic for EditFactors.xaml
     /// </summary>
-    partial class EditFactors : Window, IObserver<ResearchFactor>
+    partial class EditFactors : Window, IObserver<ResearchFactor>, IDisposable
     {
         private List<ResearchFactor> _factors;
         private int _numFactors;
@@ -192,7 +192,8 @@ namespace RCCDTool
                 _factors.Add(newFactor);
                 
             }
-           
+            
+            Dispose();           
             Close();
         }
 
@@ -225,7 +226,11 @@ namespace RCCDTool
                 return _factors;
             }
         }
-        
+
+        public void Dispose()
+        {
+            _controller.RemoveSubscriber(this);
+        }
     }
 
 

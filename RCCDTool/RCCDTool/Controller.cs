@@ -47,6 +47,11 @@ namespace RCCDTool
             _model.Subscribe(subscriber);
         }
 
+        public void RemoveSubscriber(IObserver<ResearchFactor> subscriber)
+        {
+            _model.Unsubscribe(subscriber);
+        }
+
         public bool ModelHasData => _model.HasData;
 
         public int NumFactors => _model.NumFactors;
