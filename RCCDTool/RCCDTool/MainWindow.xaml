@@ -7,6 +7,7 @@
         xmlns:local="clr-namespace:RCCDTool"
         mc:Ignorable="d"
         Title="MainWindow" Height="536" Width="714">
+    
     <Grid>
         <TextBox x:Name="totalN" HorizontalAlignment="Left" Height="23" Margin="166,27,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="67"/>
         <Label x:Name="label" Content="Total N:" HorizontalAlignment="Left" Margin="24,27,0,0" VerticalAlignment="Top"/>
@@ -19,11 +20,11 @@
         <Label x:Name="RM" Content="# of Repeated Measures" HorizontalAlignment="Left" Margin="16,85,0,0" VerticalAlignment="Top" FontSize="10.667" Width="147"/>
         <Label x:Name="designLabel2" Content="Design Selected: " HorizontalAlignment="Left" Margin="263,24,0,0" VerticalAlignment="Top" FontWeight="Bold" FontStyle="Italic"/>
         <Label x:Name="designLabel" Content="" HorizontalAlignment="Left" Margin="363,24,0,0" VerticalAlignment="Top"/>
-        <Grid x:Name="factorGrid" xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid" HorizontalAlignment="Left" Height="406" Margin="346,64,0,0" VerticalAlignment="Top" Width="350" Background="#FFD1CCCC">
+        <Grid x:Name="factorGrid" xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid" DataContext="{Binding ElementName=window}" HorizontalAlignment="Left" Height="406" Margin="346,64,0,0" VerticalAlignment="Top" Width="350" Background="#FFD1CCCC">
             <Grid.Resources>
-                <xcdg:DataGridCollectionViewSource x:Key="key_factors" Source="{Binding Source={x:Static Application.Current}, Path=FactorSet }"/>
+                <xcdg:DataGridCollectionViewSource x:Key="key_factors" Source="{Binding FactorSet, Mode=OneWay, PresentationTraceSources.TraceLevel=High}"/>
             </Grid.Resources>
-            <xcdg:DataGridControl x:Name="FactorsGrid" ItemsSource="{Binding Source={StaticResource key_factors}}"/>
+            <xcdg:DataGridControl x:Name="FactorsGrid" ItemsSource="{Binding Source={StaticResource key_factors}}" Margin="-92,0,0,0"/>
         </Grid>
         <Button x:Name="button1" Content="Edit Factors" HorizontalAlignment="Left" Margin="621,475,0,0" VerticalAlignment="Top" Width="75" Click="button1_Click"/>
 

@@ -24,7 +24,8 @@ namespace RCCDTool
         //private IModel _model;
         private IController _controller;
         List<ResearchFactor> _factors;
-        private static DataTable factorSet;
+        private DataTable factorSet;
+        private DataGridControl dgControl;
 
         public MainWindow()
         {
@@ -33,12 +34,28 @@ namespace RCCDTool
         }
         public MainWindow(string designSelection, IModel model, IController controller)
         {
-            InitializeComponent();
+            Type entityType = typeof(ResearchFactor);
+            factorSet = new DataTable(entityType.Name);
+            PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(entityType);
+
+            foreach (PropertyDescriptor prop in properties)
+            {
+                factorSet.Columns.Add(prop.Name, prop.PropertyType);
+            }
+
             _factors = new List<ResearchFactor>();
+            //factorSet = UpdateDataTable();
+            InitializeComponent();
+            
             _designSelection = designSelection;
             designLabel.Content += designSelection;
             _controller = controller;
-            updateFactorList();
+            
+            dgControl = new DataGridControl
+            {
+                ItemsSource = new DataGridCollectionView(FactorSet.DefaultView)
+            };
+            
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
@@ -55,8 +72,6 @@ namespace RCCDTool
                 EditFactors ef = new EditFactors(nf, _controller);
                 _controller.AddSubscriber(ef);
                 ef.Show();
-                //List<ResearchFactor> factors = ef.Factors;
-                //updateFactorList(factors);
             }
             catch (FormatException exception)
             {
@@ -69,69 +84,31 @@ namespace RCCDTool
             }
         }
 
-        internal void updateFactorList()
-        {
-            //int nf = int.Parse(numFactors.Text.ToString());
-            Label factorLabel;
-            factorGrid.Children.Clear();
-            //MessageBox.Show("Num Factors: " + _factors.Count);
-            
-            //for (int i = 0; i < 4; i++)
-            //{
-            //    factorGrid.ColumnDefinitions.Add(new ColumnDefinition());
-            //}
+ 
 
-            //for (int i = 0; i < _factors.Count; i++)
-            //{
-            //    factorGrid.RowDefinitions.Add(new RowDefinition());
-            //}
-            
-
-            //for (int i = 0; i < _factors.Count; i++)
-            //{
-            //    factorGrid.RowDefinitions.Add(new RowDefinition());
-            //    factorLabel = new Label();
-            //    factorLabel.Content = _factors[i].ToString();
-            //    Grid.SetRow(factorLabel, i);
-            //    Grid.SetColumn(factorLabel, 0);
-            //    factorGrid.Children.Add(factorLabel);
-            //}
-
-
-            factorSet = CreateDataTable();
-            DataGridControl dgControl = new DataGridControl
-            {
-                ItemsSource = new DataGridCollectionView(FactorSet.DefaultView)
-            };
-        }
-
-        public DataTable CreateDataTable()
+        public void UpdateDataTable()
         {
 
             ///this part sets up the structure of our datatable
             //http://stackoverflow.com/questions/701223/net-convert-generic-collection-to-datatable
-            DataSet ds = new DataSet();
+            
             Type entityType = typeof(ResearchFactor);
-            DataTable dt = new DataTable(entityType.Name); // (typeof (ResearchFactor).ToString());
             PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(entityType);
-
-            foreach (PropertyDescriptor prop in properties)
-            {
-                dt.Columns.Add(prop.Name, prop.PropertyType);
-            }
 
             //now we need to add the data to the table.
             foreach (ResearchFactor factor in _factors)
             {
-                DataRow row = dt.NewRow();
+                DataRow row = factorSet.NewRow();
 
                 foreach (PropertyDescriptor prop in properties)
                 {
                     row[prop.Name] = prop.GetValue(factor);
                 }
+
+                factorSet.Rows.Add(row);
+               
             }
-            ds.Tables.Add(dt);
-            return dt;
+
         }
 
 
@@ -148,7 +125,7 @@ namespace RCCDTool
                 _factors.Add(value);
             }
 
-            updateFactorList();
+            UpdateDataTable();
         }
 
         public void OnError(Exception error)
@@ -162,6 +139,6 @@ namespace RCCDTool
         }
 
 
-        public static DataTable FactorSet => factorSet;
+        public DataTable FactorSet => factorSet;
     }
 }

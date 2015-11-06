@@ -189,7 +189,7 @@ namespace RCCDTool
                 }
 
                 _controller.addFactor(newFactor);
-                _factors.Add(newFactor);
+                //_factors.Add(newFactor);
                 
             }
             
