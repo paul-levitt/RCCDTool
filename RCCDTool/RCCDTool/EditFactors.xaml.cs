@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -10,9 +11,8 @@ namespace RCCDTool
     /// <summary>
     /// Interaction logic for EditFactors.xaml
     /// </summary>
-    partial class EditFactors : Window, IObserver<ResearchFactor>, IDisposable
+    partial class EditFactors : Window
     {
-        private List<ResearchFactor> _factors;
         private int _numFactors;
         private IController _controller;
         
@@ -21,16 +21,12 @@ namespace RCCDTool
             
             InitializeComponent();
             _controller = controller;
-            _factors = new List<ResearchFactor>();
+            
             _numFactors = numFactors;
 
             if (_controller.ModelHasData)
             {
-                _numFactors = _controller.NumFactors;
-                foreach (var factor in _controller.ResearchFactors)
-                {
-                    if (_factors != null) _factors.Add(factor);
-                }
+                _numFactors = _controller.NumFactors < _numFactors ? numFactors : _controller.NumFactors;
                 
             }
         
@@ -75,37 +71,35 @@ namespace RCCDTool
 
         public void buildTable(int numFactors)
         {
-         
-            ComboBox cb;
-            TextBox tb;
-            TextBox tb2;
-            CheckBox checkbox;
-            
             for (int i = 0; i < numFactors; i++)
             {
                 //box for label
-                tb = new TextBox();
-                tb.Height = 20;
-                tb.Width = 170;
-                tb.Name = "factorName";
-                
+                var tb = new TextBox
+                {
+                    Height = 20,
+                    Width = 170,
+                    Name = "factorName"
+                };
+
 
                 Grid.SetRow(tb, i + 1);
                 Grid.SetColumn(tb, 0);
                 
 
                 //box for number of levels
-                tb2 = new TextBox();
-                tb2.Height = 20;
-                tb2.Width = 170;
-                tb2.Name = "numLevels";
-                
+                var tb2 = new TextBox
+                {
+                    Height = 20,
+                    Width = 170,
+                    Name = "numLevels"
+                };
+
                 Grid.SetRow(tb2, i + 1);
                 Grid.SetColumn(tb2, 1);
                 
 
                 //checkbox for isRandomized
-                checkbox = new CheckBox
+                var checkbox = new CheckBox
                 {
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center
@@ -117,7 +111,7 @@ namespace RCCDTool
 
 
                 //combobox for within/between subjects selection
-                cb = new ComboBox
+                var cb = new ComboBox
                 {
                     Width = 170,
                     Height = 20
@@ -127,13 +121,13 @@ namespace RCCDTool
                 cb.Items.Add("Between Subjects Factor");
                 Grid.SetRow(cb, i+1); // I guess this means that "whatever grid you put me in, I'll be in this row and this column. 
                 Grid.SetColumn(cb, 3);
-                if (_controller.ModelHasData)
-                {
-                    tb.Text = _controller.ResearchFactors[i].Label;
-                    tb2.Text = _controller.ResearchFactors[i].Levels.ToString();
-                    checkbox.IsChecked = _controller.ResearchFactors[i].IsRandomized;
-                    cb.SelectedItem = _controller.ResearchFactors[i].isWithinSubjects ? "Within Subjects Factor" : "Between Subjects Factor";
 
+                if (_controller.NumFactors > i)
+                {
+                    tb.Text = _controller.FactorSet.Rows[i]["Label"].ToString();
+                    tb2.Text = _controller.FactorSet.Rows[i]["Levels"].ToString();
+                    checkbox.IsChecked = _controller.FactorSet.Rows[i].Field<bool>("IsRandomized");
+                    cb.SelectedItem = _controller.FactorSet.Rows[i].Field<bool>("IsWithinSubjects") ? "Within Subjects Factor" : "Between Subjects Factor";
                 }
 
                 factorGrid.Children.Add(tb);
@@ -189,48 +183,12 @@ namespace RCCDTool
                 }
 
                 _controller.addFactor(newFactor);
-                //_factors.Add(newFactor);
                 
             }
             
-            Dispose();           
             Close();
         }
 
-        public void OnNext(ResearchFactor value)
-        {
-            if ((value != null) && (_factors.Contains(value)))
-            {
-                _factors.Remove(value);
-            }
-            else if ((value != null) && (!_factors.Contains(value)))
-            {
-                _factors.Add(value);
-            }
-        }
-
-        public void OnError(Exception error)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OnCompleted()
-        {
-            throw new NotImplementedException();
-        }
-
-        internal List<ResearchFactor> Factors
-        {
-            get
-            {
-                return _factors;
-            }
-        }
-
-        public void Dispose()
-        {
-            _controller.RemoveSubscriber(this);
-        }
     }
 
 

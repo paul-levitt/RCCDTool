@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Data;
 
 namespace RCCDTool
 {
@@ -15,25 +16,14 @@ namespace RCCDTool
             _model = model;
             
             _mw = new MainWindow("Within and Between Subjects", _model, this);
-            model.Subscribe(_mw);
+            //model.Subscribe(_mw);
             _mw.Show();
             //System.Windows.Threading.Dispatcher.Run();
         }
 
         public void addFactor(ResearchFactor factor)
         {
-            bool factorAlreadyExists = false;
-            foreach (var researchFactor in _model.ResearchFactors)
-            {
-                if (factor.Label == researchFactor.Label)
-                {
-                    factorAlreadyExists = true;
-                    break;
-                }
-                    
-            }
-
-            if(!factorAlreadyExists)
+            if(!_model.FactorSet.Rows.Contains(factor.Label))
                 _model.addFactor(factor);
         }
 
@@ -42,20 +32,21 @@ namespace RCCDTool
             _model.removeFactor(factor);
         }
 
-        public void AddSubscriber(IObserver<ResearchFactor> subscriber)
-        {
-            _model.Subscribe(subscriber);
-        }
+        //public void AddSubscriber(IObserver<ResearchFactor> subscriber)
+        //{
+        //    _model.Subscribe(subscriber);
+        //}
 
-        public void RemoveSubscriber(IObserver<ResearchFactor> subscriber)
-        {
-            _model.Unsubscribe(subscriber);
-        }
+        //public void RemoveSubscriber(IObserver<ResearchFactor> subscriber)
+        //{
+        //    _model.Unsubscribe(subscriber);
+        //}
 
         public bool ModelHasData => _model.HasData;
 
         public int NumFactors => _model.NumFactors;
-        public ObservableCollection<ResearchFactor> ResearchFactors => _model.ResearchFactors;
+        //public ObservableCollection<ResearchFactor> ResearchFactors => _model.ResearchFactors;
+        public DataTable FactorSet => _model.FactorSet;
 
         public void ClearFactors()
         {

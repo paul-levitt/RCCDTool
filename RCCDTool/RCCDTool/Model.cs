@@ -2,98 +2,83 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Data;
+using Xceed.Wpf.DataGrid;
+using DataRow = System.Data.DataRow;
 
 namespace RCCDTool
 {
     class Model : IModel
     {
-        ObservableCollection<ResearchFactor> ocr;
-        List<IObserver<ResearchFactor>> observers;
-        //private List<ResearchFactor> _factors;
+        private static DataTable factorSet;
+        private DataGridControl dgControl;
+        
+        public DataTable FactorSet => factorSet;
 
         public Model()
         {
-            observers = new List<IObserver<ResearchFactor>>();
-            //this._factors = new List<ResearchFactor>();
-            ocr = new ObservableCollection<ResearchFactor>();
-            ocr.CollectionChanged += notifyObservers;
             
+            Type entityType = typeof(ResearchFactor);
+            factorSet = new DataTable(entityType.Name);
+            PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(entityType);
+
+            foreach (PropertyDescriptor prop in properties)
+            {
+                factorSet.Columns.Add(prop.Name, prop.PropertyType);
+            }
+            //set primary key. Not sure how to use this, but hopefully I can figure this out.
+            DataColumn[] column = new DataColumn[1];
+            column[0] = factorSet.Columns["Label"];
+            factorSet.PrimaryKey = column;
+
+            DataRow rowTest = factorSet.NewRow();
+            rowTest["Label"] = "testRow";
+            rowTest["isRandomized"] = true;
+            rowTest["isWithinSubjects"] = false;
+            rowTest["Levels"] = 5;
+
+            factorSet.Rows.Add(rowTest);
+
+            dgControl = new DataGridControl
+            {
+                ItemsSource = new DataGridCollectionView(FactorSet.DefaultView)
+            };
+
         }
 
-        public IDisposable Subscribe(IObserver<ResearchFactor> observer)
-        {
-            observers.Add(observer);
-            return null;
-        }
-
-        public IDisposable Unsubscribe(IObserver<ResearchFactor> observer)
-        {
-            observers.Remove(observer);
-            return null;
-        }
 
         public void addFactor(ResearchFactor newFactor)
         {
-            ocr.Add(newFactor);
+            Type entityType = typeof(ResearchFactor);
+            PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(entityType);
+
+            //now we need to add the data to the table.
             
+            DataRow row = factorSet.NewRow();
+
+            foreach (PropertyDescriptor prop in properties)
+            {
+                row[prop.Name] = prop.GetValue(newFactor);
+            }
+
+            factorSet.Rows.Add(row);
             
+            //dgControl.ItemsSource = new DataGridCollectionView(FactorSet.DefaultView);
         }
+
         public void removeFactor(ResearchFactor newFactor)
         {
-            ocr.Remove(newFactor);
+            
         }
 
-        public void notifyObservers(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == NotifyCollectionChangedAction.Remove)
-            {
-                foreach (var o in observers)
-                {
-                    foreach (var item in e.OldItems)
-                    {
-                        o.OnNext((ResearchFactor)item);
-                    }
-                }
-            }
-            else if (e.Action == NotifyCollectionChangedAction.Add)
-            {
-                foreach(var o in observers)
-                {
-                    foreach (var item in e.NewItems)
-                    {
-                        o.OnNext((ResearchFactor)item);
-                    }
-                }
-            }
-            else if(e.Action == NotifyCollectionChangedAction.Replace)
-            {
-                foreach (var o in observers)
-                {
-                    foreach (var item in e.NewItems)
-                    {
-                        o.OnNext((ResearchFactor)item);
-                    }
-                }
-            }
+        public bool HasData => factorSet != null && factorSet.Rows.Count > 0;
 
+        public int NumFactors => factorSet?.Rows.Count ?? 0; //wow, how compact!!
 
-            //foreach (var item in e.NewItems)
-            //{
-                
-            //}
-        }
-
-        public bool HasData => ocr != null && ocr.Count > 0;
-
-        public int NumFactors => ocr == null ? 0 : ocr.Count; //wow, how compact!!
-
-        public ObservableCollection<ResearchFactor> ResearchFactors => ocr;
         public void ClearFactors()
         {
-            while(ocr.Count >0)
-                ocr.Remove(ocr[0]);
-
-            //ocr.Clear();
+            factorSet.Clear();
         }
     }
 }

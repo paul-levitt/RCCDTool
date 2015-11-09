@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Data;
 
 namespace RCCDTool
 {
-    public interface IModel : IObservable<ResearchFactor>
+    public interface IModel
     {
         void addFactor(ResearchFactor newFactor);
         void removeFactor(ResearchFactor newFactor);
-        void notifyObservers(object sender, NotifyCollectionChangedEventArgs e);
+       
         bool HasData { get; }
         int NumFactors { get; }
-        ObservableCollection<ResearchFactor> ResearchFactors { get; }
+        DataTable FactorSet { get; }
+        
         void ClearFactors();
-        IDisposable Unsubscribe(IObserver<ResearchFactor> observer);
+        
     }
 }
