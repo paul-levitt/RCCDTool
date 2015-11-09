@@ -23,17 +23,6 @@ namespace RCCDTool
         private string _designSelection;
         private IController _controller;
 
-        public DataTable FactorSet
-        {
-            get
-            {
-                if (_controller?.ModelHasData ?? false)
-                    return _controller.FactorSet;
-                else
-                    return new DataTable();
-                
-            }
-        }
         public MainWindow()
         {
             //InitializeComponent();
