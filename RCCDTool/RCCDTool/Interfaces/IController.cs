@@ -14,6 +14,8 @@ namespace RCCDTool
         //ObservableCollection<ResearchFactor> ResearchFactors { get; }
         DataTable FactorSet { get; }
         void ClearFactors();
+        void Show(System.Windows.Window view);
         //void RemoveSubscriber(IObserver<ResearchFactor> subscriber);
+        void GenerateDesign();
     }
 }

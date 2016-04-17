@@ -1,0 +1,13 @@
+﻿<Window x:Class="RCCDTool.DesignDisplay"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RCCDTool"
+        mc:Ignorable="d"
+        Title="DesignDisplay" Height="414.407" Width="426.483">
+    <Grid>
+        <Label x:Name="testLabel" Content="Label" HorizontalAlignment="Left" Margin="79,27,0,0" VerticalAlignment="Top" Height="303" Width="257"/>
+
+    </Grid>
+</Window>

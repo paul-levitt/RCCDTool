@@ -28,7 +28,7 @@ namespace RCCDTool
             //InitializeComponent();
             
         }
-        public MainWindow(string designSelection, IModel model, IController controller)
+        public MainWindow(string designSelection, IController controller)
         {
             
             InitializeComponent();
@@ -45,12 +45,12 @@ namespace RCCDTool
             nPerGroup.Text = nPerGroupCalc.ToString();
         }
 
-        private void button1_Click(object sender, RoutedEventArgs e)
+        private void editFactors_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 int nf = int.Parse(numFactors.Text);
-                EditFactors ef = new EditFactors(nf, _controller);
+                EditFactorsViewer ef = new EditFactorsViewer(nf, _controller);
                
                 ef.Show();
                 FactorsGrid.Items.Refresh();
@@ -65,5 +65,33 @@ namespace RCCDTool
                 MessageBox.Show("Exception was:" + exception);
             }
         }
+
+        private void generateDesign_Click(object sender, RoutedEventArgs e)
+        {
+
+            int numSubjects;
+            try
+            {
+                numSubjects = int.Parse(totalN.Text);
+                if (numSubjects <= 0)
+                {
+                    throw new ArgumentException("Number of subjects must be greater than 0.");
+                }
+
+                _controller.GenerateDesign();
+                
+            }
+            catch (FormatException exception)
+            {
+                    MessageBox.Show("Invalid entry for number of people. Please enter an integer greater than 1.");              
+
+            }
+            catch (ArgumentException exception)
+            {
+                MessageBox.Show(exception.Message);
+            }
+         
+        }
+
     }
 }

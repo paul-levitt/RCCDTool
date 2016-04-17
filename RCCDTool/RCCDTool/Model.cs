@@ -13,8 +13,12 @@ namespace RCCDTool
     {
         private static DataTable factorSet;
         private DataGridControl dgControl;
-        
+        private static DataTable designOutput;
+        private static DataSet ResearchDesignOutput;
+
         public DataTable FactorSet => factorSet;
+
+        public DataTable DesignOutput => designOutput;
 
         public Model()
         {
@@ -27,24 +31,25 @@ namespace RCCDTool
             {
                 factorSet.Columns.Add(prop.Name, prop.PropertyType);
             }
+
             //set primary key. Not sure how to use this, but hopefully I can figure this out.
             DataColumn[] column = new DataColumn[1];
-            column[0] = factorSet.Columns["Label"];
+            column[0] = factorSet.Columns["Name"];
             factorSet.PrimaryKey = column;
+            
+            //DataRow rowTest = factorSet.NewRow();
+            //rowTest["Label"] = "testRow";
+            //rowTest["isRandomized"] = true;
+            //rowTest["isWithinSubjects"] = false;
+            //rowTest["Levels"] = 5;
 
-            DataRow rowTest = factorSet.NewRow();
-            rowTest["Label"] = "testRow";
-            rowTest["isRandomized"] = true;
-            rowTest["isWithinSubjects"] = false;
-            rowTest["Levels"] = 5;
-
-            factorSet.Rows.Add(rowTest);
+            //factorSet.Rows.Add(rowTest);
 
             dgControl = new DataGridControl
             {
                 ItemsSource = new DataGridCollectionView(FactorSet.DefaultView)
             };
-
+            
         }
 
 
@@ -63,6 +68,7 @@ namespace RCCDTool
             }
 
             factorSet.Rows.Add(row);
+           
             
             //dgControl.ItemsSource = new DataGridCollectionView(FactorSet.DefaultView);
         }
@@ -80,5 +86,60 @@ namespace RCCDTool
         {
             factorSet.Clear();
         }
+
+        public void generateDesign(int numSubjects)
+        {
+
+            ResearchDesignOutput = new DataSet();
+            for (int i = 0; i < FactorSet.Rows.Count; i++)
+            {
+                if (!(bool) FactorSet.Rows[i]["isWithinSubjects"] && (bool)FactorSet.Rows[i]["isRandomized"])
+                {
+                    DataTable dt;
+                    for (int j = 0; j < (int) FactorSet.Rows[i]["Levels"]; j++)
+                    {
+                        dt = new DataTable(FactorSet.Rows[i]["Name"].ToString()+i);
+
+                        for (int k = 0; k < FactorSet.Rows.Count; k++)
+                        {
+                            if ((bool) FactorSet.Rows[k]["isWithinSubjects"])
+                            {
+                                dt.Columns.Add(FactorSet.Rows[k]["Name"].ToString(), typeof (string));
+                                
+                            }
+                
+                        }
+
+                        ResearchDesignOutput.Tables.Add(dt);
+                    }
+
+                }
+                    
+
+            }
+            designOutput = new DataTable("Research Design");
+            designOutput.Columns.Add("Index", typeof(int));
+            
+            //designOutput.Columns.Add("", typeof(int));
+        }
+
+        public void CreateTableSchema()
+        {
+            Dictionary<string, int> betweenSubjectsFactors = new Dictionary<string, int>();
+
+            for (int i = 0; i < FactorSet.Rows.Count; i++)
+            {
+                if (!(bool) FactorSet.Rows[i]["isWithinSubjects"])
+                    betweenSubjectsFactors.Add(FactorSet.Rows[i]["Name"].ToString(), (int)FactorSet.Rows[i]["Levels"]);
+            }
+
+            List<string> tablesToAdd = new List<string>();
+
+            for (int i = 0; i < betweenSubjectsFactors.Count; i++)
+            {
+                
+            }
+        }
+
     }
 }
