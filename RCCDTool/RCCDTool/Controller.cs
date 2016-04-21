@@ -44,7 +44,8 @@ namespace RCCDTool
 
         public void GenerateDesign()
         {
-
+            int numSumjects =20;
+            _model.generateDesign(numSumjects);
             DesignDisplay designDisplay = new DesignDisplay(this);
             designDisplay.Show();
         }

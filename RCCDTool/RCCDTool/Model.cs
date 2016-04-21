@@ -91,54 +91,108 @@ namespace RCCDTool
         {
 
             ResearchDesignOutput = new DataSet();
-            for (int i = 0; i < FactorSet.Rows.Count; i++)
+
+            List<string> tablesToAdd = CreateTableSchema();
+
+            foreach (string table in tablesToAdd)
             {
-                if (!(bool) FactorSet.Rows[i]["isWithinSubjects"] && (bool)FactorSet.Rows[i]["isRandomized"])
+                DataTable dt = new DataTable(table);
+                DataColumn participantNum = new DataColumn()
                 {
-                    DataTable dt;
-                    for (int j = 0; j < (int) FactorSet.Rows[i]["Levels"]; j++)
+                    ColumnName = "Participant #",
+                    DataType = typeof(int),
+                    AutoIncrement = true,
+                    AutoIncrementSeed = 1,
+                    AutoIncrementStep = 1
+                };
+
+                dt.Columns.Add(participantNum);
+                for (int i = 0; i < FactorSet.Rows.Count; i++)
+                {
+                    if ((bool)FactorSet.Rows[i]["isWithinSubjects"])
                     {
-                        dt = new DataTable(FactorSet.Rows[i]["Name"].ToString()+i);
+                        List<string> labels = (List<string>)FactorSet.Rows[i]["Labels"];
 
-                        for (int k = 0; k < FactorSet.Rows.Count; k++)
+                        foreach (string label in labels)
                         {
-                            if ((bool) FactorSet.Rows[k]["isWithinSubjects"])
-                            {
-                                dt.Columns.Add(FactorSet.Rows[k]["Name"].ToString(), typeof (string));
-                                
-                            }
-                
+                            dt.Columns.Add(label, typeof (string));
+                            
                         }
-
-                        ResearchDesignOutput.Tables.Add(dt);
                     }
-
-                }
                     
+                }
+                ResearchDesignOutput.Tables.Add(dt);
 
             }
-            designOutput = new DataTable("Research Design");
-            designOutput.Columns.Add("Index", typeof(int));
+
+            //designOutput = new DataTable("Research Design");
+            //designOutput.Columns.Add("Index", typeof(int));
             
             //designOutput.Columns.Add("", typeof(int));
         }
 
-        public void CreateTableSchema()
+        public List<string> CreateTableSchema()
         {
-            Dictionary<string, int> betweenSubjectsFactors = new Dictionary<string, int>();
+            //Dictionary<string, List<string>> betweenSubjectsFactors = new Dictionary<string, List<string>>();
+            Queue<List<string>> q = new Queue<List<string>>();
 
             for (int i = 0; i < FactorSet.Rows.Count; i++)
             {
                 if (!(bool) FactorSet.Rows[i]["isWithinSubjects"])
-                    betweenSubjectsFactors.Add(FactorSet.Rows[i]["Name"].ToString(), (int)FactorSet.Rows[i]["Levels"]);
+                {
+                    //betweenSubjectsFactors.Add(FactorSet.Rows[i]["Name"].ToString(), (List<string>)FactorSet.Rows[i]["Labels"]);
+                    q.Enqueue((List<string>)FactorSet.Rows[i]["Labels"]);
+                }
             }
 
-            List<string> tablesToAdd = new List<string>();
+            return recursiveGenerateTables(q);
+   
+        }
 
-            for (int i = 0; i < betweenSubjectsFactors.Count; i++)
+        public List<string> recursiveGenerateTables(Queue<List<string>> q)
+        {
+            
+            List<string> n = new List<string>();
+            List<string> p = new List<string>();
+            bool nonBase = false;
+
+            while (q.Count > 0)
             {
+                List<string> researchFactor = q.Dequeue();
                 
+                foreach (string s in researchFactor)
+                {
+                    //while the queue is >0, recursively call this method. All stacks that call this method are not our base case.
+                    if (q.Count > 0)  
+                    {
+                        n = recursiveGenerateTables(q);
+                        nonBase = true;
+                    }
+
+                    //For the base case, we simply add all the factors to the list.
+                    if(!nonBase)
+                    {
+                        n.Add(s);
+                    }
+                    //if this is not the base case, then we must have gotten a list from a recursive call; thus, we add its contents to the each research factor in this list.
+                    else
+                    {
+                        for (int i = 0; i < n.Count; i++)
+                        {
+                            p.Add(s + " | " + n[i]);
+
+                        }
+
+                        //can use the LINQ version here, but its not as easy to understand, I think.
+                        //p.AddRange(n.Select(t => s + " | " + t));
+
+                    }
+                }
             }
+
+            if (p.Count == 0) return n;
+
+            return p;
         }
 
     }

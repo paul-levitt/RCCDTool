@@ -15,6 +15,8 @@ namespace RCCDTool
         DataTable FactorSet { get; }
         
         void ClearFactors();
-        
+        void generateDesign(int numSubjects);
+
+
     }
 }
