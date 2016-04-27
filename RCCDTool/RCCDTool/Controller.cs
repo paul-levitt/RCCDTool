@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 
@@ -10,6 +11,19 @@ namespace RCCDTool
         public bool ModelHasData => _model.HasData;
         public int NumFactors => _model.NumFactors;
         public DataTable FactorSet => _model.FactorSet;
+        public List<string> Tables
+        {
+            get { return _model.Tables; }
+            set { _model.Tables = value; }
+        }
+
+        public DataSet ResearchDesignOutput
+        {
+            get { return _model.ResearchDesignOutput; }
+            set { _model.ResearchDesignOutput = value; }
+
+        }
+
         MainWindow _mw;
         
         public Controller(IModel model)

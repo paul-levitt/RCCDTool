@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Xceed.Wpf.DataGrid;
 
 namespace RCCDTool
 {
@@ -25,6 +26,7 @@ namespace RCCDTool
         public DesignDisplay()
         {
             InitializeComponent();
+            updateDesign();
         }
         public DesignDisplay(IController controller)
         {
@@ -36,9 +38,21 @@ namespace RCCDTool
 
         public void updateDesign()
         {
-            //this.testLabel.Content = NumSubjects.ToString();
-            //this._controller.GetDesign(numSubjects); //or something like that
-            
+            tableSelect.ItemsSource = _controller.Tables;
+            tableSelect.SelectedItem = _controller.Tables[0];
+            DataGridCollectionView dcg = new DataGridCollectionView(_controller.ResearchDesignOutput.Tables[0].DefaultView);
+            DesignTable.ItemsSource = dcg;
+        }
+
+        private void tableSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int index = (sender as ComboBox).SelectedIndex;
+
+            string table = (string)(sender as ComboBox).Items[index];
+
+            DataGridCollectionView dcg = new DataGridCollectionView(_controller.ResearchDesignOutput.Tables[table].DefaultView);
+            DesignTable.ItemsSource = dcg;
+
         }
     }
 }

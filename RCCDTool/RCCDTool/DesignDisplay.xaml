@@ -3,11 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid"
         xmlns:local="clr-namespace:RCCDTool"
         mc:Ignorable="d"
-        Title="DesignDisplay" Height="414.407" Width="426.483">
+        Title="DesignDisplay"
+        x:Name ="_display">
     <Grid>
-        <Label x:Name="testLabel" Content="Label" HorizontalAlignment="Left" Margin="79,27,0,0" VerticalAlignment="Top" Height="303" Width="257"/>
+        <Grid.Resources>
+            <xcdg:DataGridCollectionViewSource x:Key="DesignSource" Source="{Binding }"/>
+        </Grid.Resources>
+        <xcdg:DataGridControl x:Name="DesignTable" ItemsSource="{Binding Source={StaticResource DesignSource}}" Margin="10,40,10,10" />
+        <ComboBox x:Name="tableSelect" HorizontalAlignment="Left" Margin="100,10,0,0" VerticalAlignment="Top" Width="229" Height="25" SelectionChanged="tableSelect_SelectionChanged"/>
+        <Label x:Name="label" Content="Table Select:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="85" Height="25"/>
 
     </Grid>
 </Window>

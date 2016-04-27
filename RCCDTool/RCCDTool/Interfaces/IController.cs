@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 
@@ -8,14 +9,14 @@ namespace RCCDTool
     {
         void addFactor(ResearchFactor factor);
         void removeFactor(ResearchFactor factor);
-        //void AddSubscriber(IObserver<ResearchFactor> subscriber);
-        bool ModelHasData { get; }
-        int NumFactors { get; }
-        //ObservableCollection<ResearchFactor> ResearchFactors { get; }
-        DataTable FactorSet { get; }
         void ClearFactors();
         void Show(System.Windows.Window view);
-        //void RemoveSubscriber(IObserver<ResearchFactor> subscriber);
         void GenerateDesign();
+
+        bool ModelHasData { get; }
+        int NumFactors { get; }        
+        DataTable FactorSet { get; }
+        List<string> Tables { get; set; }
+        DataSet ResearchDesignOutput { get; set; }
     }
 }

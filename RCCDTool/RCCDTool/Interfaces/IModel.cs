@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Data;
@@ -9,14 +10,14 @@ namespace RCCDTool
     {
         void addFactor(ResearchFactor newFactor);
         void removeFactor(ResearchFactor newFactor);
-       
-        bool HasData { get; }
-        int NumFactors { get; }
-        DataTable FactorSet { get; }
-        
         void ClearFactors();
         void generateDesign(int numSubjects);
 
+        bool HasData { get; }
+        int NumFactors { get; }
+        DataTable FactorSet { get; }
+        List<string> Tables { get; set; }
+        DataSet ResearchDesignOutput { get; set; }
 
     }
 }

@@ -14,15 +14,22 @@ namespace RCCDTool
         private static DataTable factorSet;
         private DataGridControl dgControl;
         private static DataTable designOutput;
-        private static DataSet ResearchDesignOutput;
+        private static DataSet _researchDesignOutput;
+        public List<string> Tables { get; set; }
 
+        public DataSet ResearchDesignOutput
+        {
+            get { return _researchDesignOutput; }
+            set { _researchDesignOutput = value; }
+            
+        }
         public DataTable FactorSet => factorSet;
 
         public DataTable DesignOutput => designOutput;
 
         public Model()
         {
-            
+            Tables = new List<string>();
             Type entityType = typeof(ResearchFactor);
             factorSet = new DataTable(entityType.Name);
             PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(entityType);
@@ -90,11 +97,10 @@ namespace RCCDTool
         public void generateDesign(int numSubjects)
         {
 
-            ResearchDesignOutput = new DataSet();
+            _researchDesignOutput = new DataSet();
+            Tables = CreateTableSchema();
 
-            List<string> tablesToAdd = CreateTableSchema();
-
-            foreach (string table in tablesToAdd)
+            foreach (string table in Tables)
             {
                 DataTable dt = new DataTable(table);
                 DataColumn participantNum = new DataColumn()
@@ -121,7 +127,13 @@ namespace RCCDTool
                     }
                     
                 }
-                ResearchDesignOutput.Tables.Add(dt);
+                DataRow rowTest = dt.NewRow();
+                //rowTest[0] = "testRow";
+                rowTest[1] = table;
+                rowTest[2] = table;
+
+                dt.Rows.Add(rowTest);
+                _researchDesignOutput.Tables.Add(dt);
 
             }
 
