@@ -11,7 +11,7 @@ namespace RCCDTool
         void removeFactor(ResearchFactor factor);
         void ClearFactors();
         void Show(System.Windows.Window view);
-        void GenerateDesign();
+        void GenerateDesign(int numSubjects);
 
         bool ModelHasData { get; }
         int NumFactors { get; }        

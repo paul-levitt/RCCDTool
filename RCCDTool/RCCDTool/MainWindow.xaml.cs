@@ -78,7 +78,7 @@ namespace RCCDTool
                     throw new ArgumentException("Number of subjects must be greater than 0.");
                 }
 
-                _controller.GenerateDesign();
+                _controller.GenerateDesign(numSubjects);
                 
             }
             catch (FormatException exception)
