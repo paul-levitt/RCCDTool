@@ -12,6 +12,8 @@ namespace RCCDTool
         void removeFactor(ResearchFactor newFactor);
         void ClearFactors();
         void generateDesign(int numSubjects);
+        void LoadFactorSet(string FilePath);
+        void SaveFactorSet(string FilePath);
 
         bool HasData { get; }
         int NumFactors { get; }

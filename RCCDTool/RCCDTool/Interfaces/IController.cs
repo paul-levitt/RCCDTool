@@ -12,6 +12,8 @@ namespace RCCDTool
         void ClearFactors();
         void Show(System.Windows.Window view);
         void GenerateDesign(int numSubjects);
+        void LoadFactorSet(string FilePath);
+        void SaveFactorSet(string FilePath);
 
         bool ModelHasData { get; }
         int NumFactors { get; }        

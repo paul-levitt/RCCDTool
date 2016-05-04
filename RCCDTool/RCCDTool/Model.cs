@@ -7,8 +7,10 @@ using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using System.Windows;
 using System.Windows.Documents;
+using System.Xml;
 using Xceed.Wpf.DataGrid;
 using DataRow = System.Data.DataRow;
 
@@ -22,18 +24,6 @@ namespace RCCDTool
         private static DataSet _researchDesignOutput;
         public List<string> Tables { get; set; }
         private static RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider();
-
-
-        public int NumSubjects { get; set; }
-        public DataSet ResearchDesignOutput
-        {
-            get { return _researchDesignOutput; }
-            set { _researchDesignOutput = value; }
-            
-        }
-        public DataTable FactorSet => factorSet;
-
-        public DataTable DesignOutput => designOutput;
 
         public Model()
         {
@@ -67,6 +57,26 @@ namespace RCCDTool
             
         }
 
+        #region Getters/Setters
+
+        public int NumSubjects { get; set; }
+        public DataSet ResearchDesignOutput
+        {
+            get { return _researchDesignOutput; }
+            set { _researchDesignOutput = value; }
+            
+        }
+        public DataTable FactorSet => factorSet;
+
+        public DataTable DesignOutput => designOutput;
+
+        public bool HasData => factorSet != null && factorSet.Rows.Count > 0;
+
+        public int NumFactors => factorSet?.Rows.Count ?? 0; //wow, how compact!!
+
+        #endregion
+
+        #region factorset methods
 
         public void addFactor(ResearchFactor newFactor)
         {
@@ -93,14 +103,34 @@ namespace RCCDTool
             
         }
 
-        public bool HasData => factorSet != null && factorSet.Rows.Count > 0;
-
-        public int NumFactors => factorSet?.Rows.Count ?? 0; //wow, how compact!!
-
         public void ClearFactors()
         {
             factorSet.Clear();
         }
+
+        public void SaveFactorSet(string FilePath)
+        {
+            XmlTextWriter writer = new XmlTextWriter(FilePath, Encoding.Default);
+
+            FactorSet.WriteXml(writer);
+
+            writer.Close();
+        }
+
+        public void LoadFactorSet(string FilePath)
+        {
+        
+            XmlTextReader reader = new XmlTextReader(FilePath);
+
+            FactorSet.ReadXml(reader);
+
+            reader.Close();
+        
+        }
+
+        #endregion
+
+        #region Research Design generation methods
 
         public void generateDesign(int numSubjects)
         {
@@ -164,9 +194,6 @@ namespace RCCDTool
 
         public DataTable FillTable(DataTable inputTable, int numSubjects)
         {
-            
-            List<List<string>> combos = new List<List<string>>();
-
             //add blank rows for processing for the total number of participants
             for (int h = 0; h < numSubjects; h++)
             {
@@ -175,36 +202,24 @@ namespace RCCDTool
             }
 
             // Create a queue of participant numbers to randomly select from
-            List<int> participants = Enumerable.Range(0, numSubjects-1).ToList();
-
+            List<int> participants = Enumerable.Range(0, numSubjects).ToList();
             
             //generate all possible conditions for each within subject factor
-            Dictionary<string, List<List<string>>> conditions = new Dictionary<string, List<List<string>>>();
+            Dictionary<string, List<List<string>>> conditions = GenerateAllPossibleConditions();
 
-            try
-            {
-                for (int i = 0; i < FactorSet.Rows.Count; i++)
-                {
-                    if ((bool) FactorSet.Rows[i]["isWithinSubjects"] || (bool) FactorSet.Rows[i]["IsRandomized"])
-                    {
-                        List<string> labels = (List<string>) FactorSet.Rows[i]["Labels"];
+            AssignConditions(participants, conditions, inputTable);
 
-                        var comboLists = GetPermutations(labels, labels.Count).Select(c => c.ToList()).ToList();
-                        conditions.Add(FactorSet.Rows[i]["Name"].ToString(), comboLists.ToList());
-                        
-                    }
-                }
-            }
-            catch (Exception e) //TODO: handle actual possible exceptions.
-            {
-                MessageBox.Show(e.Message);
-            }
+            return inputTable;
 
+        }
+
+        private void AssignConditions(List<int> participants, Dictionary<string, List<List<string>>> conditions, DataTable inputTable)
+        {
             //this represents all conditions that have been assigned across participants. It is cleared once all have been assigned.
             List<List<int>> usedIndexes = new List<List<int>>();
 
             //One list for each condition set.
-            for (int j = 0; j< conditions.Count; j++)
+            for (int j = 0; j < conditions.Count; j++)
                 usedIndexes.Add(new List<int>());
 
             try
@@ -253,27 +268,36 @@ namespace RCCDTool
                 MessageBox.Show(e.Message);
             }
 
-            return inputTable;
-
         }
 
-        private int GetRand(int max)
+        Dictionary<string, List<List<string>>> GenerateAllPossibleConditions()
         {
-            byte[] randomNum = new byte[1];
-            rngCsp.GetBytes(randomNum);
-            int retVal = 0;
-            retVal = randomNum[0] % max;
-            return retVal;
+            //generate all possible conditions for each within subject factor
+            Dictionary<string, List<List<string>>> conditions = new Dictionary<string, List<List<string>>>();
 
-        }
+            try
+            {
+                for (int i = 0; i < FactorSet.Rows.Count; i++)
+                {
+                    if ((bool)FactorSet.Rows[i]["isWithinSubjects"] || (bool)FactorSet.Rows[i]["IsRandomized"])
+                    {
+                        List<string> labels = (List<string>)FactorSet.Rows[i]["Labels"];
 
-        static IEnumerable<IEnumerable<T>> GetPermutations<T>(IEnumerable<T> list, int length)
-        {
-            if (length == 1) return list.Select(t => new T[] { t });
+                        var comboLists = GetPermutations(labels, labels.Count).Select(c => c.ToList()).ToList();
+                        conditions.Add(FactorSet.Rows[i]["Name"].ToString(), comboLists.ToList());
 
-            return GetPermutations(list, length - 1)
-                .SelectMany(t => list.Where(e => !t.Contains(e)),
-                    (t1, t2) => t1.Concat(new T[] { t2 }));
+                    }
+                }
+
+                return conditions;
+            }
+            catch (Exception e) //TODO: handle actual possible exceptions.
+            {
+                MessageBox.Show(e.Message);
+            }
+
+            return null;
+
         }
 
         public List<string> CreateTableSchema()
@@ -337,6 +361,31 @@ namespace RCCDTool
 
             return p;
         }
+
+        #endregion
+
+        #region General helper methods
+
+        private int GetRand(int max)
+        {
+            byte[] randomNum = new byte[1];
+            rngCsp.GetBytes(randomNum);
+            int retVal = randomNum[0] % max;
+            return retVal;
+
+        }
+
+        static IEnumerable<IEnumerable<T>> GetPermutations<T>(IEnumerable<T> list, int length)
+        {
+            if (length == 1) return list.Select(t => new T[] { t });
+
+            return GetPermutations(list, length - 1)
+                .SelectMany(t => list.Where(e => !t.Contains(e)),
+                    (t1, t2) => t1.Concat(new T[] { t2 }));
+        }
+
+        #endregion
+
 
     }
 }

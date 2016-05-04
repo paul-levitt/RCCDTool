@@ -63,6 +63,16 @@ namespace RCCDTool
             designDisplay.Show();
         }
 
+        public void LoadFactorSet(string FilePath)
+        {
+            _model.LoadFactorSet(FilePath);
+        }
+
+        public void SaveFactorSet(string FilePath)
+        {
+            _model.SaveFactorSet(FilePath);
+        }
+
         public void StartApp()
         {
             _mw.ShowDialog();
