@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using Xceed.Wpf.AvalonDock.Controls;
 
 namespace RCCDTool
 {
@@ -43,15 +44,18 @@ namespace RCCDTool
       
         private void CreateGrid(int numFactors)
         {
-            factorGrid.ShowGridLines = true;
+            factorGrid.ShowGridLines = false;
+            this.MinWidth = 850;
+            this.MinHeight = 125*numFactors;
+            //factorGrid.MinHeight = this.MinHeight;
             
             //create columns            
-            ColumnDefinition col1 = new ColumnDefinition();
-            ColumnDefinition col2 = new ColumnDefinition();
-            ColumnDefinition col3 = new ColumnDefinition();
-            ColumnDefinition col4 = new ColumnDefinition();
+            ColumnDefinition col1 = new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }; 
+            ColumnDefinition col2 = new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) };
+            ColumnDefinition col3 = new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) };
+            ColumnDefinition col4 = new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) };
             //ColumnDefinition col5 = new ColumnDefinition();
-            
+
             factorGrid.ColumnDefinitions.Add(col1);
             factorGrid.ColumnDefinitions.Add(col2);
             factorGrid.ColumnDefinitions.Add(col3);
@@ -60,7 +64,7 @@ namespace RCCDTool
 
             //create rows based on number of factors
             for (int i = 0; i <= numFactors; i++)
-                factorGrid.RowDefinitions.Add(new RowDefinition());
+                factorGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto } );
 
             //Create Column Headers
             TextBlock col = new TextBlock();
@@ -117,15 +121,14 @@ namespace RCCDTool
                 };
 
                 button.Click += ButtonOnClick;
-                var labelList = new Label {Content = "Levels: "};
-                Grid.SetRow(button, i + 1); 
-                Grid.SetColumn(button, 1);
-                Grid.SetRow(labelList, i + 1);
-                Grid.SetColumn(labelList, 1);
-
-                Grid.SetRow(tb2, i + 1);
-                Grid.SetColumn(tb2, 1);
+                StackPanel sp = new StackPanel();
+                sp.Margin = new Thickness(10);
+                Grid.SetRow(sp, i + 1);
+                Grid.SetColumn(sp, 1);
+                var labelList = new ListBox { MaxHeight = 45 };
                 
+                sp.Children.Add(labelList);
+                sp.Children.Add(button);
 
                 //checkbox for isRandomized
                 var checkbox = new CheckBox
@@ -159,15 +162,13 @@ namespace RCCDTool
                     tb2.Text = _controller.FactorSet.Rows[i]["Levels"].ToString();
                     checkbox.IsChecked = _controller.FactorSet.Rows[i].Field<bool>("IsRandomized");
                     cb.SelectedItem = _controller.FactorSet.Rows[i].Field<bool>("IsWithinSubjects") ? "Within Subjects Factor" : "Between Subjects Factor";
-                    labelList.Content = "Labels: " + CreateLabel((List<string>)_controller.FactorSet.Rows[i]["Labels"]);
+                    labelList.ItemsSource = (List<string>) _controller.FactorSet.Rows[i]["Labels"];
                     listOfAllLabels[i] = (List<string>) _controller.FactorSet.Rows[i]["Labels"];
 
                 }
 
                 factorGrid.Children.Add(tb);
-                factorGrid.Children.Add(tb2);
-                factorGrid.Children.Add(labelList);
-                factorGrid.Children.Add(button);
+                factorGrid.Children.Add(sp);
                 factorGrid.Children.Add(checkbox);
                 factorGrid.Children.Add(cb);
 
@@ -179,9 +180,10 @@ namespace RCCDTool
         private void ButtonOnClick(object sender, RoutedEventArgs routedEventArgs)
         {
             //get the row number and label of the button we clicked
-            int rowNum = Grid.GetRow(sender as UIElement);
-            Label label = (Label)factorGrid.Children.Cast<UIElement>().First( element => rowNum == Grid.GetRow(element) && Grid.GetColumn(element) == 1 && element.GetType() == typeof(Label));
-            TextBox numLevels = (TextBox)factorGrid.Children.Cast<UIElement>().First(element => rowNum == Grid.GetRow(element) && Grid.GetColumn(element) == 1 && element.GetType() == typeof(TextBox));
+            var rowNum = Grid.GetRow((sender as FrameworkElement).Parent as UIElement);
+          
+            //now get the listbox so we can reset the labels later
+            var label = (sender as FrameworkElement).Parent.FindVisualChildren<ListBox>().First(l => l.GetType() == typeof(ListBox));
 
             List<string> newLabels = new List<string>();
             if (listOfAllLabels[rowNum-1] != null)
@@ -191,13 +193,14 @@ namespace RCCDTool
             afl.LabelReturn += (fromChild) => newLabels = fromChild;
             afl.ShowDialog();
             if (label != null)
-            {              
-                label.Content = "Labels: " + CreateLabel(newLabels);
+            {
+                label.ItemsSource = null;
+                label.ItemsSource = newLabels;
             }
 
             listOfAllLabels[rowNum-1] = newLabels;
-            if (numLevels != null)
-                numLevels.Text = listOfAllLabels[rowNum - 1].Count.ToString();
+            //if (numLevels != null)
+            //    numLevels.Text = listOfAllLabels[rowNum - 1].Count.ToString();
         }
 
         private string CreateLabel(List<string> labels)
@@ -239,8 +242,8 @@ namespace RCCDTool
                     {
                         if ((uie as TextBox).Name == "factorName")
                             newFactor.Name = (uie as TextBox).Text;
-                        else
-                            newFactor.Levels = int.Parse((uie as TextBox).Text);
+                        //else
+                            //newFactor.Levels = int.Parse((uie as TextBox).Text);
                     }
                     else if (uie is ComboBox)
                     {
@@ -251,9 +254,12 @@ namespace RCCDTool
                     {
                         newFactor.IsRandomized = (bool)(uie as CheckBox).IsChecked;
                     }
-                    else if (uie is Button)
+                    else if (uie is StackPanel)
                     {
                         newFactor.Labels = listOfAllLabels[i - 1];
+                        //newFactor.Levels = int.Parse((
+                        //    (uie as FrameworkElement).FindVisualChildren<TextBox>().First(l => l.GetType() == typeof(TextBox))).Text);
+                        newFactor.Levels = listOfAllLabels[i - 1].Count;
                     }
                 }
 

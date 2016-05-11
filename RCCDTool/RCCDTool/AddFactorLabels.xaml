@@ -7,8 +7,8 @@
         mc:Ignorable="d"
         Title="AddFactorLabels" Height="300" Width="300">
     <Grid>
-        <TextBox x:Name="newLabel_tb" HorizontalAlignment="Left" Height="25" Margin="17,27,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="163" KeyDown="newLabel_tb_KeyDown"/>
-        <Button x:Name="addLabel" Content="Add/Edit" HorizontalAlignment="Left" Margin="195,27,0,0" VerticalAlignment="Top" Width="75" Height="25" Click="addLabel_Click"/>
+        <TextBox x:Name="newLabel_tb" HorizontalAlignment="Left" Height="25" Margin="17,27,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="163"/>
+        <Button x:Name="addLabel" Content="Add/Edit" HorizontalAlignment="Left" Margin="195,27,0,0" VerticalAlignment="Top" Width="75" Height="25" Click="addLabel_Click" IsDefault="True"/>
         <ListView x:Name="labels_listView" HorizontalAlignment="Left" Height="147" Margin="17,62,0,0" VerticalAlignment="Top" Width="253" SelectionChanged="labels_listView_SelectionChanged">
             <ListView.View>
                 <GridView>

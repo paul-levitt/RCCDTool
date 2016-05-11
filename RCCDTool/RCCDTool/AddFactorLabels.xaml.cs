@@ -80,10 +80,10 @@ namespace RCCDTool
             Close();
         }
 
-        private void newLabel_tb_KeyDown(object sender, KeyEventArgs e)
-        {
-            if(e.Key == Key.Enter)
-                OnAddLevel();
-        }
+        //private void newLabel_tb_KeyDown(object sender, KeyEventArgs e)
+        //{
+        //    //if(e.Key == Key.Enter)
+        //    //    OnAddLevel();
+        //}
     }
 }

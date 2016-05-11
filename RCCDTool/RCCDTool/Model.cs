@@ -119,7 +119,7 @@ namespace RCCDTool
 
         public void LoadFactorSet(string FilePath)
         {
-        
+            //TODO: Implement error handling in the event a garbage file is selected.
             XmlTextReader reader = new XmlTextReader(FilePath);
 
             FactorSet.ReadXml(reader);
@@ -360,6 +360,11 @@ namespace RCCDTool
             if (p.Count == 0) return n;
 
             return p;
+        }
+
+        private void EnsureCounterBalance(DataTable inputTable)
+        {
+            
         }
 
         #endregion
