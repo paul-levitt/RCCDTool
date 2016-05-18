@@ -5,11 +5,13 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
 using System.Windows.Documents;
+using System.Windows.Media.Converters;
 using System.Xml;
 using Xceed.Wpf.DataGrid;
 using DataRow = System.Data.DataRow;
@@ -23,6 +25,7 @@ namespace RCCDTool
         private static DataTable designOutput;
         private static DataSet _researchDesignOutput;
         public List<string> Tables { get; set; }
+        private IEnumerable<IEnumerable<object>> conditionsCombined;
         private static RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider();
 
         public Model()
@@ -192,7 +195,7 @@ namespace RCCDTool
             }
         }
 
-        public DataTable FillTable(DataTable inputTable, int numSubjects)
+        private DataTable FillTable(DataTable inputTable, int numSubjects)
         {
             //add blank rows for processing for the total number of participants
             for (int h = 0; h < numSubjects; h++)
@@ -205,23 +208,20 @@ namespace RCCDTool
             List<int> participants = Enumerable.Range(0, numSubjects).ToList();
             
             //generate all possible conditions for each within subject factor
-            Dictionary<string, List<List<string>>> conditions = GenerateAllPossibleConditions();
+            GenerateAllPossibleConditions();
 
-            AssignConditions(participants, conditions, inputTable);
+            //Now assign the conditions for the number of participants to the specified table
+            AssignConditions(participants, inputTable);
 
             return inputTable;
 
         }
 
-        private void AssignConditions(List<int> participants, Dictionary<string, List<List<string>>> conditions, DataTable inputTable)
+        private void AssignConditions(List<int> participants, DataTable inputTable)
         {
             //this represents all conditions that have been assigned across participants. It is cleared once all have been assigned.
-            List<List<int>> usedIndexes = new List<List<int>>();
-
-            //One list for each condition set.
-            for (int j = 0; j < conditions.Count; j++)
-                usedIndexes.Add(new List<int>());
-
+            List<int> usedIndexes = new List<int>();
+ 
             try
             {
                 //Randomly select a pariticpant, then randomly assign a condition to them
@@ -229,38 +229,40 @@ namespace RCCDTool
                 {
                     int nextParticipantIndex = GetRand(participants.Count);
                     int nextParticipant = participants[nextParticipantIndex];
-                    var tempComboList = conditions;
+                    var tempComboList = conditionsCombined.ToList();
                     int j = 0; //this ties our used indexes to our combolist
 
                     participants.RemoveAt(nextParticipantIndex);
+                    
+                    //get a random number to represent the next condition to assign
+                    int nextConditionIndex = GetRand(conditionsCombined.Count());
 
-                    foreach (var conditionSet in tempComboList)
+                    //if this condition has already been used, generate a new condition
+                    while (usedIndexes.Any(nextNum => nextConditionIndex == nextNum))
                     {
-                        //get a random number to represent the next condition to assign
-                        int nextConditionIndex = GetRand(conditionSet.Value.Count);
+                        //refresh the conditionset if we run out
+                        if (usedIndexes.Count >= conditionsCombined.Count())
+                            usedIndexes.Clear();
 
-                        //if this condition has already been used, generate a new condition
-                        while (usedIndexes[j].Any(nextNum => nextConditionIndex == nextNum))
-                        {
-                            //refresh the conditionset if we run out
-                            if (usedIndexes[j].Count >= conditionSet.Value.Count)
-                                usedIndexes[j].Clear();
-
-                            nextConditionIndex = GetRand(conditionSet.Value.Count);
-                        }
-
-                        //add the condition to the list; we don't want to use this one again unless all condtions are used
-                        usedIndexes[j].Add(nextConditionIndex);
-
-                        //assign the condition to the participant
-                        for (int i = 0; i < conditionSet.Value[nextConditionIndex].Count; i++)
-                        {
-                            string condition = conditionSet.Value[nextConditionIndex][i];
-                            inputTable.Rows[nextParticipant][condition] = i;
-                        }
-
-                        j++;
+                        nextConditionIndex = GetRand(conditionsCombined.Count());
                     }
+                    
+                    //add the condition to the list of used conditions; we don't want to use this one again unless all condtions are used
+                    usedIndexes.Add(nextConditionIndex);
+
+                    //this represents the specific ordering of conditions for one participant
+                    var conditionSet = tempComboList[nextConditionIndex].ToList();
+                    
+                    //assign the condition to the participant
+                    foreach (List<string> t in conditionSet)
+                    {
+                        for (int i = 0; i < t.Count; i++)
+                        {
+                            string condition = t[i];
+                            inputTable.Rows[nextParticipant][condition] = i;
+                        }    
+                    }
+                    
                 }
             }
             catch (Exception e) //TODO: handle actual possible exceptions.
@@ -270,10 +272,10 @@ namespace RCCDTool
 
         }
 
-        Dictionary<string, List<List<string>>> GenerateAllPossibleConditions()
+        private void GenerateAllPossibleConditions()
         {
             //generate all possible conditions for each within subject factor
-            Dictionary<string, List<List<string>>> conditions = new Dictionary<string, List<List<string>>>();
+            List<List<List<string>>> conditions = new List<List<List<string>>>();
 
             try
             {
@@ -284,23 +286,21 @@ namespace RCCDTool
                         List<string> labels = (List<string>)FactorSet.Rows[i]["Labels"];
 
                         var comboLists = GetPermutations(labels, labels.Count).Select(c => c.ToList()).ToList();
-                        conditions.Add(FactorSet.Rows[i]["Name"].ToString(), comboLists.ToList());
-
+                        conditions.Add(comboLists);
                     }
                 }
 
-                return conditions;
+                conditionsCombined = CartesianProduct(conditions);
+
             }
             catch (Exception e) //TODO: handle actual possible exceptions.
             {
                 MessageBox.Show(e.Message);
             }
 
-            return null;
-
         }
 
-        public List<string> CreateTableSchema()
+        private List<string> CreateTableSchema()
         {
             Queue<List<string>> q = new Queue<List<string>>();
 
@@ -316,7 +316,7 @@ namespace RCCDTool
    
         }
 
-        public List<string> recursiveGenerateTables(Queue<List<string>> q)
+        private List<string> recursiveGenerateTables(Queue<List<string>> q)
         {
             
             List<string> n = new List<string>();
@@ -362,10 +362,6 @@ namespace RCCDTool
             return p;
         }
 
-        private void EnsureCounterBalance(DataTable inputTable)
-        {
-            
-        }
 
         #endregion
 
@@ -387,6 +383,17 @@ namespace RCCDTool
             return GetPermutations(list, length - 1)
                 .SelectMany(t => list.Where(e => !t.Contains(e)),
                     (t1, t2) => t1.Concat(new T[] { t2 }));
+        }
+
+        //Thanks to Ian Griffiths for this fantastic solution for cartesian products: http://www.interact-sw.co.uk/iangblog/2010/08/01/linq-cartesian-3 
+        public static IEnumerable<IEnumerable<object>> CartesianProduct(IEnumerable<IEnumerable<object>> inputs)
+        {
+            return inputs.Aggregate(
+                (IEnumerable<IEnumerable<object>>)new object[][] { new object[0] },
+                (soFar, input) =>
+                    from prevProductItem in soFar
+                    from item in input
+                    select prevProductItem.Concat(new object[] { item }));
         }
 
         #endregion

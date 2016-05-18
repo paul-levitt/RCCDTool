@@ -114,6 +114,7 @@
     <Compile Include="Interfaces\IController.cs" />
     <Compile Include="Interfaces\IModel.cs" />
     <Compile Include="Model.cs" />
+    <Compile Include="PartitionedList.cs" />
     <Compile Include="ResearchFactor.cs" />
     <Compile Include="WithinBetweenSubjectsDesign.cs" />
     <Page Include="AddFactorLabels.xaml">
