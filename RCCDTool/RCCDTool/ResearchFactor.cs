@@ -1,18 +1,32 @@
 ﻿using System.Collections.Generic;
+using System.Windows;
 
 namespace RCCDTool
 {
-    public class ResearchFactor
+    public class ResearchFactor : DependencyObject
     {
         private string _name;
         private int _levels;
         private bool _isWithinSubjects;
         private bool _isRandomized;
 
+        static ResearchFactor()
+        {
+            //FrameworkPropertyMetadata metadata = new FrameworkPropertyMetadata(new string(),
+            //    FrameworkPropertyMetadataOptions.None);
+
+        }
+
         public override string ToString()
         {
             return _name + "; " + _levels + "; isWS: " + _isWithinSubjects + "; Rand: " + _isRandomized;
         }
+
+        public static readonly DependencyProperty NameProperty = DependencyProperty.Register("Name", typeof(string), typeof(ResearchFactor));
+        public static readonly DependencyProperty LevelsProperty = DependencyProperty.Register("Levels", typeof(int), typeof(ResearchFactor));
+        public static readonly DependencyProperty IsWithinSubjectsProperty = DependencyProperty.Register("IsWithinSubjects", typeof(bool), typeof(ResearchFactor));
+        public static readonly DependencyProperty IsRandomizedProperty = DependencyProperty.Register("IsRandomized", typeof(bool), typeof(ResearchFactor));
+
         #region Getters/Setters
         public string Name
         {
@@ -40,7 +54,7 @@ namespace RCCDTool
             }
         }
 
-        public bool isWithinSubjects
+        public bool IsWithinSubjects
         {
             get
             {

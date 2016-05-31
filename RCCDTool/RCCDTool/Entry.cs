@@ -12,10 +12,13 @@ namespace RCCDTool
         //[System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "4.0.0.0")]
         static void Main(string[] args)
         {
-            Model model = new Model();
+            //Model model = new Model();
+            //MainWindow mw = new MainWindow();
 
-            Controller controller = new Controller(model);
-            controller.StartApp();
+            //MainWindowViewModel mainWindowViewModel = new MainWindowViewModel(model);
+            //mw.DataContext = mainWindowViewModel;
+            ////mainWindowViewModel.StartApp();
+            //mw.Show();
 
         }
     }

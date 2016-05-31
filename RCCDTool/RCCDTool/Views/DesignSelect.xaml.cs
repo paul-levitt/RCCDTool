@@ -19,7 +19,7 @@ namespace RCCDTool
             var checkedButton = designSelection.Children.OfType<RadioButton>().Where(r => r.IsChecked == true).FirstOrDefault();
             
             Model model = new Model();
-            Controller controller = new Controller(model);
+            MainWindowViewModel mainWindowViewModel = new MainWindowViewModel(model);
             Close();
             //MainWindow mw = new MainWindow(checkedButton.Content.ToString(), model, controller);
             //mw.Show();
