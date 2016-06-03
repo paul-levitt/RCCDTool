@@ -24,9 +24,16 @@ namespace RCCDTool
         private DataGridControl dgControl;
         private static DataTable designOutput;
         private static DataSet _researchDesignOutput;
+        private static ObservableCollection<string> _designTypes = new ObservableCollection<string> {"Within Subjects Factor", "Between Subjects Factor"};
         public List<string> Tables { get; set; }
         private IEnumerable<IEnumerable<object>> conditionsCombined;
         private static RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider();
+
+        public ObservableCollection<string> DesignTypes
+        {
+            get { return _designTypes; }
+            set { _designTypes = value; }
+        } 
 
         public Model()
         {

@@ -49,26 +49,6 @@ namespace RCCDTool
             nPerGroup.Text = nPerGroupCalc.ToString();
         }
 
-        //private void editFactors_Click(object sender, RoutedEventArgs e)
-        //{
-        //    try
-        //    {
-        //        int nf = int.Parse(numFactors.Text);
-        //        EditFactorsViewer ef = new EditFactorsViewer(nf, _controller);
-               
-        //        ef.Show();
-        //        FactorsGrid.Items.Refresh();
-        //    }
-        //    catch (FormatException exception)
-        //    {
-        //        MessageBox.Show("Invalid entry for number of factors! Please enter an integer greater than 1.");
-        //        MessageBox.Show("Exception was:" + exception);
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        MessageBox.Show("Exception was:" + exception);
-        //    }
-        //}
 
         private void generateDesign_Click(object sender, RoutedEventArgs e)
         {

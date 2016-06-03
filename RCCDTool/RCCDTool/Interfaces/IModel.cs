@@ -19,6 +19,7 @@ namespace RCCDTool
         int NumFactors { get; }
         DataTable FactorSet { get; }
         List<string> Tables { get; set; }
+        ObservableCollection<string> DesignTypes { get; set; }
         DataSet ResearchDesignOutput { get; set; }
 
     }

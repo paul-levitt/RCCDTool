@@ -12,31 +12,15 @@ using RCCDTool.ViewModels;
 
 namespace RCCDTool
 {
-   
-    //public class ObservableObject : INotifyPropertyChanged
-    //{
-    //    public event PropertyChangedEventHandler PropertyChanged;
-
-    //    protected void RaisePropertyChangedEvent(string propertyName)
-    //    {
-    //        var handler = PropertyChanged;
-    //        if (handler != null)
-    //            handler(this, new PropertyChangedEventArgs(propertyName));
-    //    }
-    //}
-
+  
     public class MainWindowViewModel : ViewModelBase, IController
     {
         IModel _model;
-        //MainWindow _mw;
+        private EditFactorsViewModel _efViewModel;
 
         public MainWindowViewModel(IModel model)
         {
-            _model = model;
-
-            //_mw = new MainWindow("Within and Between Subjects", this);
-            
-
+            _model = model;        
         }
         
         #region Properties
@@ -120,11 +104,11 @@ namespace RCCDTool
                     {
                         try
                         {
-                            //int nf = int.Parse(numFactors.Text);
-                            EditFactorsViewModel efViewModel = new EditFactorsViewModel(_model);
-                            EditFactorsViewer ef = new EditFactorsViewer(efViewModel);
+                            if(_efViewModel == null)
+                                _efViewModel = new EditFactorsViewModel(_model);
+
+                            EditFactorsViewer ef = new EditFactorsViewer(_efViewModel);
                             ef.DataContext = this;
-                            //MessageBox.Show("Command executed: " + param);
                             ef.Show();
                             // FactorsGrid.Items.Refresh();
                         }

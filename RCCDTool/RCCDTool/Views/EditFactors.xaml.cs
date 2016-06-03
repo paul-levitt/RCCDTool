@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using System.Reflection;
@@ -19,33 +20,9 @@ namespace RCCDTool
     partial class EditFactorsViewer : Window
     {
         private int _numFactors;
-        //private IController _controller;
         private EditFactorsViewModel _efViewModel;
-        private List<List<string>> listOfAllLabels;
         private List<ResearchFactor> researchFactors;
-
-        //public EditFactorsViewer(int numFactors, IController controller)
-        //{
-            
-        //    InitializeComponent();
-        //    _controller = controller;
-            
-        //    _numFactors = numFactors;
-        //    researchFactors = new List<ResearchFactor>();
-
-        //    if (_controller.ModelHasData)
-        //    {
-        //        _numFactors = _controller.NumFactors < _numFactors ? numFactors : _controller.NumFactors;
-
-        //    }
-        //    listOfAllLabels = new List<List<string>>();
-        //    for (int i = 0; i < _numFactors; i++)
-        //        listOfAllLabels.Add(new List<string>());
-            
-        //    CreateGrid(_numFactors); 
-        //    buildTable(_numFactors);
-    
-        //}
+        
 
         public EditFactorsViewer(EditFactorsViewModel efViewModel)
         {
@@ -56,19 +33,8 @@ namespace RCCDTool
             _numFactors = efViewModel.ResearchFactors.Count;
             researchFactors = new List<ResearchFactor>();
 
-            //if (_controller.ModelHasData)
-            //{
-            //    _numFactors = _controller.NumFactors < _numFactors ? _numFactors : _controller.NumFactors;
-
-            //}
-
-            listOfAllLabels = new List<List<string>>();
-            for (int i = 0; i < _numFactors; i++)
-                listOfAllLabels.Add(new List<string>());
-
             CreateGrid(_numFactors);
             buildTable(_numFactors);
-
         }
 
 
@@ -137,7 +103,7 @@ namespace RCCDTool
                     checkbox.IsChecked = _efViewModel.ResearchFactors[i].IsRandomized;//_controller.FactorSet.Rows[i].Field<bool>("IsRandomized");
                     cb.SelectedItem = _efViewModel.ResearchFactors[i].IsWithinSubjects; // _controller.FactorSet.Rows[i].Field<bool>("IsWithinSubjects") ? "Within Subjects Factor" : "Between Subjects Factor";
                     labelList.ItemsSource = _efViewModel.ResearchFactors[i].Labels;//(List<string>)_controller.FactorSet.Rows[i]["Labels"];
-                    listOfAllLabels[i] = _efViewModel.ResearchFactors[i].Labels;   //(List<string>)_controller.FactorSet.Rows[i]["Labels"];
+                    //listOfAllLabels[i] = _efViewModel.ResearchFactors[i].Labels;   //(List<string>)_controller.FactorSet.Rows[i]["Labels"];
 
                 }
                 
@@ -146,15 +112,20 @@ namespace RCCDTool
 
         }
 
+        /// <summary>
+        /// Adds a row and associated bindings for each UIElement to the grid.
+        /// </summary>
+        /// <param name="rowNum"></param>
         private void AddRow(int rowNum)
         {
             ResearchFactor rf = new ResearchFactor();
-            _efViewModel.ResearchFactors.Add(rf);
 
-            //Binding binding = new Binding();
-            //binding.Source = rf;
-            //binding.Path = new PropertyPath("Value");
-            //binding.Mode = BindingMode.TwoWay;
+            //Create a new research factor if there isn't one already, otherwise select that research factor
+            if(_efViewModel.ResearchFactors.Count <= rowNum)
+                _efViewModel.ResearchFactors.Add(rf);
+            else
+                rf = _efViewModel.ResearchFactors[rowNum];
+            
 
             //box for label
             var tb = new TextBox
@@ -166,13 +137,14 @@ namespace RCCDTool
                 
             };
 
-            //tb.DataContext = _efViewModel;
-            Binding binding = new Binding("Name") {Source = _efViewModel.ResearchFactors[rowNum]};
+            Binding binding = new Binding("Name") { Source = rf };
+            binding.Mode = BindingMode.TwoWay;
             tb.SetBinding(TextBox.TextProperty, binding);
             
             Grid.SetRow(tb, rowNum + 1);
             Grid.SetColumn(tb, 0);
 
+            //Button for creating levels
             var createlevels = new Button
             {
                 Content = "Create levels",
@@ -186,13 +158,18 @@ namespace RCCDTool
             sp.Margin = new Thickness(10);
             Grid.SetRow(sp, rowNum + 1);
             Grid.SetColumn(sp, 1);
+
+
+            //Listbox for the labels to be displayed in
             var labelList = new ListBox { MinHeight = 45, MaxHeight = 45 };
-            //set data binding 
-            binding = new Binding("Labels") { Source = _efViewModel.ResearchFactors[rowNum] };
-            labelList.SetBinding(ItemsControl.ItemsSourceProperty, binding);
+                        
+            binding = new Binding("Labels") { Source = rf };
+            binding.Mode = BindingMode.TwoWay;
+            labelList.SetBinding(ListBox.ItemsSourceProperty, binding);
 
             sp.Children.Add(labelList);
             sp.Children.Add(createlevels);
+
 
             //checkbox for isRandomized
             var checkbox = new CheckBox
@@ -201,13 +178,14 @@ namespace RCCDTool
                 VerticalAlignment = VerticalAlignment.Center
             };
 
-            binding = new Binding("IsRandomized") { Source = _efViewModel.ResearchFactors[rowNum] };
-            checkbox.SetBinding(ItemsControl.ItemsSourceProperty, binding);
+
+            binding = new Binding("IsRandomized") { Source = rf };
+            binding.Mode = BindingMode.TwoWay;
+            checkbox.SetBinding(CheckBox.IsCheckedProperty, binding);
 
             Grid.SetRow(checkbox, rowNum + 1);
             Grid.SetColumn(checkbox, 2);
-
-
+            
 
             //combobox for within/between subjects selection
             var cb = new ComboBox
@@ -216,11 +194,18 @@ namespace RCCDTool
                 Height = 20
             };
 
-            cb.Items.Add("Within Subjects Factor");
-            cb.Items.Add("Between Subjects Factor");
+            string ComboBoxTrueValue = _efViewModel.DesignTypes[0]; //"Within Subjects Factor";
+            string ComboBoxFalseValue = _efViewModel.DesignTypes[1]; //"Between Subjects Factor";
 
-            binding = new Binding("IsWithinSubjects") { Source = _efViewModel.ResearchFactors[rowNum] };
-            cb.SetBinding(ItemsControl.ItemsSourceProperty, binding);
+
+            Binding binding2 = new Binding("DesignTypes") { Source = _efViewModel };
+            binding2.Mode = BindingMode.TwoWay;
+            cb.SetBinding(ComboBox.ItemsSourceProperty, binding2);
+
+            binding = new Binding("IsWithinSubjects") { Source = rf, Converter = new StringToBoolConverter { TrueValue = ComboBoxTrueValue, FalseValue = ComboBoxFalseValue } };
+            binding.Mode = BindingMode.TwoWay;
+            cb.SetBinding(ComboBox.SelectedValueProperty, binding);
+
 
             Grid.SetRow(cb, rowNum + 1); // I guess this means that "whatever grid you put me in, I'll be in this row and this column. 
             Grid.SetColumn(cb, 3);
@@ -229,36 +214,24 @@ namespace RCCDTool
             factorGrid.Children.Add(sp);
             factorGrid.Children.Add(checkbox);
             factorGrid.Children.Add(cb);
-
-            listOfAllLabels.Add(new List<string>());
-            labelList.ItemsSource = listOfAllLabels[listOfAllLabels.Count-1];
-
             
         }
 
+        /// <summary>
+        /// Pops up the dialog box for the user to add levels.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="routedEventArgs"></param>
         private void createlevels_OnClick(object sender, RoutedEventArgs routedEventArgs)
         {
+            
             //get the row number and label of the button we clicked
-            var rowNum = Grid.GetRow((sender as FrameworkElement).Parent as UIElement);
-          
-            //now get the listbox so we can reset the labels later
-            var label = (sender as FrameworkElement).Parent.FindVisualChildren<ListBox>().First(l => l.GetType() == typeof(ListBox));
+            var rowNum = Grid.GetRow((sender as FrameworkElement).Parent as UIElement) -1; //-1: offset for the header row
 
-            List<string> newLabels = new List<string>();
-            if((listOfAllLabels.Count >= rowNum-1) && (listOfAllLabels[rowNum-1] != null))
-                newLabels = listOfAllLabels[rowNum-1];
-
-            AddFactorLabels afl = new AddFactorLabels(newLabels);
-            afl.LabelReturn += (fromChild) => newLabels = fromChild;
+            AddFactorLabels afl = new AddFactorLabels(_efViewModel, rowNum);
+            
             afl.ShowDialog();
-            if (label != null)
-            {
-                label.ItemsSource = null;
-                label.ItemsSource = newLabels;
-            }
-
-            listOfAllLabels[rowNum-1] = newLabels;
-
+            
         }
 
         private void setHeaderProperties(TextBlock element, string name, int row, int column)
@@ -273,64 +246,26 @@ namespace RCCDTool
             factorGrid.Children.Add(element);
         }
 
+        //TODO: Validation on saving.
         private void saveAndClose_Click(object sender, RoutedEventArgs e)
         {
-            //if (_controller.ModelHasData)
-            //    _controller.ClearFactors(); //resets the research factors, needed for updates
-
-            ////add data from the grid to the model
-            //for (int i = 1; i <= _numFactors; i++)
-            //{
-            //    var itemsInFirstRow = factorGrid.Children.Cast<UIElement>().Where(a => Grid.GetRow(a) == i);
  
-            //    ResearchFactor newFactor = new ResearchFactor();
-            //    foreach (UIElement uie in itemsInFirstRow)
-            //    {
-            //        if (uie is TextBox)
-            //        {
-            //            if ((uie as TextBox).Name == "factorName")
-            //            {
-            //                newFactor.Name = (uie as TextBox).Text;
-
-            //                if (newFactor.Name == "" || newFactor.Name == null)
-            //                {
-            //                    throw new ArgumentNullException("Please enter a name for all factors listed!");
-            //                }
-            //            }
-                        
-            //        }
-            //        else if (uie is ComboBox)
-            //        {
-            //            if ((uie as ComboBox).Text == "Within Subjects Factor")
-            //                newFactor.IsWithinSubjects = true;
-            //        }
-            //        else if (uie is CheckBox)
-            //        {
-            //            newFactor.IsRandomized = (bool)(uie as CheckBox).IsChecked;
-            //        }
-            //        else if (uie is StackPanel)
-            //        {
-            //            newFactor.Labels = listOfAllLabels[i - 1];
-            //            //newFactor.Levels = int.Parse((
-            //            //    (uie as FrameworkElement).FindVisualChildren<TextBox>().First(l => l.GetType() == typeof(TextBox))).Text);
-            //            newFactor.Levels = listOfAllLabels[i - 1].Count;
-            //        }
-            //    }
-
-            //    _controller.addFactor(newFactor);
-                
-            //}
+            var thing = _efViewModel.ResearchFactors;
             
-            //Close();
+            Close();
         }
 
+        /// <summary>
+        /// Begins the process of adding a row. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Add_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 factorGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
                 AddRow(factorGrid.RowDefinitions.Count-2);
-                listOfAllLabels.Add(new List<string>());
                 _numFactors++;
             }
             catch (Exception ex)
