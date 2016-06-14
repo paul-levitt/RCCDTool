@@ -3,8 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid"
-        xmlns:local="clr-namespace:RCCDTool"
         mc:Ignorable="d"
         Title="MainWindow" Height="555" Width="831">
     
@@ -21,12 +19,7 @@
         <Label x:Name="designLabel2" Content="Design Selected: " HorizontalAlignment="Left" Margin="263,24,0,0" VerticalAlignment="Top" FontWeight="Bold" FontStyle="Italic"/>
         <Label x:Name="designLabel" Content="" HorizontalAlignment="Left" Margin="363,24,0,0" VerticalAlignment="Top"/>
         <Grid x:Name="factorGrid" xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid" HorizontalAlignment="Left" Height="406" Margin="263,64,0,0" VerticalAlignment="Top" Width="541" Background="#FFD1CCCC">
-
-            <Grid.Resources>
-                <xcdg:DataGridCollectionViewSource x:Key="ListOfFactors" Source="{Binding FactorSet, Mode=OneWay}"/>
-
-            </Grid.Resources>
-            <xcdg:DataGridControl x:Name="FactorsGrid" ItemsSource="{Binding Source={StaticResource ListOfFactors}}" />
+            <xcdg:DataGridControl x:Name="FactorsGrid" ItemsSource="{Binding DGViewSource}" />
         </Grid>
         <Button x:Name="editFactors" Content="Edit Factors" Command="{Binding EditFactorsCommand}" CommandParameter="{Binding Text, ElementName=numFactors}" HorizontalAlignment="Left" Margin="482,480,0,0" VerticalAlignment="Top" Width="86"/>
         <Button x:Name="generateDesign" Content="Generate Randomized Set" HorizontalAlignment="Left" Margin="57,475,0,0" VerticalAlignment="Top" Width="151" Click="generateDesign_Click"/>

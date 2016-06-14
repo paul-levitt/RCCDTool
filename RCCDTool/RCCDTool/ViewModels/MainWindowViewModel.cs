@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using RCCDTool.Annotations;
 using RCCDTool.ViewModels;
+using Xceed.Wpf.DataGrid;
 
 namespace RCCDTool
 {
@@ -20,7 +21,10 @@ namespace RCCDTool
 
         public MainWindowViewModel(IModel model)
         {
-            _model = model;        
+            _model = model;
+
+            DGViewSource = new DataGridCollectionView(FactorSet.DefaultView);
+        
         }
         
         #region Properties
@@ -40,6 +44,8 @@ namespace RCCDTool
             set { _model.ResearchDesignOutput = value; }
 
         }
+
+        public DataGridCollectionView DGViewSource { get; set; }
 
         
         #endregion
@@ -108,7 +114,7 @@ namespace RCCDTool
                                 _efViewModel = new EditFactorsViewModel(_model);
 
                             EditFactorsViewer ef = new EditFactorsViewer(_efViewModel);
-                            ef.DataContext = this;
+                            ef.DataContext = _efViewModel; //this;
                             ef.Show();
                             // FactorsGrid.Items.Refresh();
                         }

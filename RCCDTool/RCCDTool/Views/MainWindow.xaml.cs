@@ -32,21 +32,25 @@ namespace RCCDTool
             
         }
 
-        public MainWindow(string designSelection, IController controller)
-        {
+        //public MainWindow(string designSelection, IController controller)
+        //{
             
-            InitializeComponent();
+        //    InitializeComponent();
             
-            _designSelection = designSelection;
-            designLabel.Content += designSelection;
-            _controller = controller;
+        //    _designSelection = designSelection;
+        //    designLabel.Content += designSelection;
+        //    _controller = controller;
             
-        }
+        //}
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            int nPerGroupCalc = (Int32.Parse(totalN.Text) / Int32.Parse(numFactors.Text));
-            nPerGroup.Text = nPerGroupCalc.ToString();
+            //int nPerGroupCalc = (Int32.Parse(totalN.Text) / Int32.Parse(numFactors.Text));
+            //nPerGroup.Text = nPerGroupCalc.ToString();
+            var dc = FactorsGrid.DataContext;
+            //MessageBox.Show("test");
+            
+
         }
 
 

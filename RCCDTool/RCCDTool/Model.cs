@@ -44,27 +44,29 @@ namespace RCCDTool
 
             foreach (PropertyDescriptor prop in properties)
             {
-                factorSet.Columns.Add(prop.Name, prop.PropertyType);
+                if(prop.ComponentType.Name == "ResearchFactor")
+                    factorSet.Columns.Add(prop.Name, prop.PropertyType);
             }
 
             //set primary key. Not sure how to use this, but hopefully I can figure this out.
             DataColumn[] column = new DataColumn[1];
             column[0] = factorSet.Columns["Name"];
             factorSet.PrimaryKey = column;
-            
+
             //DataRow rowTest = factorSet.NewRow();
-            //rowTest["Label"] = "testRow";
+            //rowTest["Name"] = "test row";
+            //rowTest["Labels"] = new ObservableCollection<string>() {"one", "two", "three"};
             //rowTest["isRandomized"] = true;
             //rowTest["isWithinSubjects"] = false;
-            //rowTest["Levels"] = 5;
+            //rowTest["Levels"] = 3;
 
             //factorSet.Rows.Add(rowTest);
 
-            dgControl = new DataGridControl
-            {
-                ItemsSource = new DataGridCollectionView(FactorSet.DefaultView)
-            };
-            
+            //dgControl = new DataGridControl
+            //{
+            //    ItemsSource = new DataGridCollectionView(FactorSet.DefaultView)
+            //};
+
         }
 
         #region Getters/Setters
