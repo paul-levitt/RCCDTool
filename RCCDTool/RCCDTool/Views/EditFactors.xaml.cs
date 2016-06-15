@@ -21,8 +21,6 @@ namespace RCCDTool
     {
         private int _numFactors;
         private EditFactorsViewModel _efViewModel;
-        private List<ResearchFactor> researchFactors;
-        
 
         public EditFactorsViewer(EditFactorsViewModel efViewModel)
         {
@@ -31,7 +29,6 @@ namespace RCCDTool
             _efViewModel = efViewModel;
 
             _numFactors = efViewModel.ResearchFactors.Count;
-            researchFactors = new List<ResearchFactor>();
 
             CreateGrid(_numFactors);
             buildTable(_numFactors);
@@ -78,7 +75,11 @@ namespace RCCDTool
             //setHeaderProperties(col, "Factor Labels:", 0, 4);
 
         }
-
+        
+        /// <summary>
+        /// Adds rows to the table; if hte model has data, then we add data from the model. 
+        /// </summary>
+        /// <param name="numFactors"></param>
         public void buildTable(int numFactors)
         {
             for (int i = 0; i < numFactors; i++)
@@ -90,20 +91,17 @@ namespace RCCDTool
                 if (_efViewModel.ResearchFactors.Count > i)
                 {
                     var nameBox = (TextBox)factorGrid.FindVisualChildren<TextBox>().First(control => Grid.GetRow(control) == i+1 && Grid.GetColumn(control) == 0);
-                    //var numLevels = (TextBox)factorGrid.FindVisualChildren<TextBox>().First(control => Grid.GetRow(control) == i+1 && Grid.GetColumn(control) == 1);
                     var checkbox = (CheckBox)factorGrid.FindVisualChildren<CheckBox>().First(control => Grid.GetRow(control) == i+1 && Grid.GetColumn(control) == 2);
                     var cb = (ComboBox)factorGrid.FindVisualChildren<ComboBox>().First(control => Grid.GetRow(control) == i+1 && Grid.GetColumn(control) == 3);
                     var piece1 =
                         factorGrid.FindVisualChildren<StackPanel>()
                             .First(control => Grid.GetRow(control) == i + 1 && Grid.GetColumn(control) == 1);
-                    var labelList = (ListBox)piece1.Children[0];//(ListBox)piece1.FindVisualChildren<ListBox>();
+                    var labelList = (ListBox)piece1.Children[0];
 
-                    nameBox.Text = _efViewModel.ResearchFactors[i].Name;//_controller.FactorSet.Rows[i]["Name"].ToString();
-                    //numLevels.Text = _controller.FactorSet.Rows[i]["Levels"].ToString();
-                    checkbox.IsChecked = _efViewModel.ResearchFactors[i].IsRandomized;//_controller.FactorSet.Rows[i].Field<bool>("IsRandomized");
-                    cb.SelectedItem = _efViewModel.ResearchFactors[i].IsWithinSubjects; // _controller.FactorSet.Rows[i].Field<bool>("IsWithinSubjects") ? "Within Subjects Factor" : "Between Subjects Factor";
-                    labelList.ItemsSource = _efViewModel.ResearchFactors[i].Labels;//(List<string>)_controller.FactorSet.Rows[i]["Labels"];
-                    //listOfAllLabels[i] = _efViewModel.ResearchFactors[i].Labels;   //(List<string>)_controller.FactorSet.Rows[i]["Labels"];
+                    nameBox.Text = _efViewModel.ResearchFactors[i].Name;
+                    checkbox.IsChecked = _efViewModel.ResearchFactors[i].IsRandomized;
+                    cb.SelectedItem = _efViewModel.ResearchFactors[i].IsWithinSubjects; 
+                    labelList.ItemsSource = _efViewModel.ResearchFactors[i].Labels;
 
                 }
                 

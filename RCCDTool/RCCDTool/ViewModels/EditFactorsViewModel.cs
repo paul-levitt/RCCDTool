@@ -14,9 +14,12 @@ namespace RCCDTool.ViewModels
     public class EditFactorsViewModel : ViewModelBase
     {
 
-        private IModel _model;
+        private Model _model;
 
-        public List<ResearchFactor> ResearchFactors { get; set; }
+        public List<ResearchFactor> ResearchFactors
+        {
+            get { return _model.ResearchFactors; }
+            set { _model.ResearchFactors = value; } }
 
         public ObservableCollection<string> DesignTypes
         {
@@ -24,16 +27,16 @@ namespace RCCDTool.ViewModels
             set { _model.DesignTypes = value; }
         }
 
-        public EditFactorsViewModel(IModel model)
+        public EditFactorsViewModel(Model model)
         {
             _model = model;
-            
-            ResearchFactors = new List<ResearchFactor>();
-
         }
 
         private RelayCommand _saveFactors;
 
+        /// <summary>
+        /// Saves research factors to the model.
+        /// </summary>
         public ICommand SaveFactors
         {
             get
@@ -42,12 +45,13 @@ namespace RCCDTool.ViewModels
                 {
                     _saveFactors = new RelayCommand(param =>
                     {
+                        _model.FactorSet.Clear();
                         foreach (ResearchFactor researchFactor in ResearchFactors)
                         {
                             DataRow row;
                             bool addNewRow = false;
 
-                            if (_model.FactorSet.AsEnumerable().All(r => r.Field<string>("Name") != researchFactor.Name))
+                            if (_model.FactorSet.AsEnumerable().All(r => r.Field<string>("Name").ToLower() != researchFactor.Name.ToLower()))
                                 //make sure that the row isn't already in the table
                             {
                                 row = _model.FactorSet.NewRow();

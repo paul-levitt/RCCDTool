@@ -23,8 +23,8 @@
         </Grid>
         <Button x:Name="editFactors" Content="Edit Factors" Command="{Binding EditFactorsCommand}" CommandParameter="{Binding Text, ElementName=numFactors}" HorizontalAlignment="Left" Margin="482,480,0,0" VerticalAlignment="Top" Width="86"/>
         <Button x:Name="generateDesign" Content="Generate Randomized Set" HorizontalAlignment="Left" Margin="57,475,0,0" VerticalAlignment="Top" Width="151" Click="generateDesign_Click"/>
-        <Button x:Name="saveFactorSet" Content="Save Factor Set" HorizontalAlignment="Left" Margin="702,480,0,0" VerticalAlignment="Top" Width="102" Click="saveFactorSet_Click"/>
-        <Button x:Name="loadFactorSet" Content="Load Factor Set" HorizontalAlignment="Left" Margin="582,480,0,0" VerticalAlignment="Top" Width="105" Click="loadFactorSet_Click"/>
+        <Button x:Name="saveFactorSet" Content="Save Factor Set" Command="{Binding SaveFileCommand}" HorizontalAlignment="Left" Margin="702,480,0,0" VerticalAlignment="Top" Width="102"/>
+        <Button x:Name="loadFactorSet" Content="Load Factor Set" Command="{Binding OpenFileCommand}" HorizontalAlignment="Left" Margin="582,480,0,0" VerticalAlignment="Top" Width="105"/>
 
     </Grid>
 </Window>

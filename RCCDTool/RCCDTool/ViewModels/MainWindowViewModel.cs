@@ -5,21 +5,22 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Windows.Forms;
 using System.Windows.Input;
 using RCCDTool.Annotations;
 using RCCDTool.ViewModels;
 using Xceed.Wpf.DataGrid;
+using System.Windows;
+using Microsoft.Win32;
 
 namespace RCCDTool
 {
   
     public class MainWindowViewModel : ViewModelBase, IController
     {
-        IModel _model;
+        Model _model;
         private EditFactorsViewModel _efViewModel;
 
-        public MainWindowViewModel(IModel model)
+        public MainWindowViewModel(Model model)
         {
             _model = model;
 
@@ -90,7 +91,8 @@ namespace RCCDTool
 
         public void SaveFactorSet(string FilePath)
         {
-            _model.SaveFactorSet(FilePath);
+            //_model.SaveFactorSet(FilePath);
+            //TODO remove IController and associated methods. No longer MVC.
         }
 
         #endregion
@@ -99,6 +101,8 @@ namespace RCCDTool
         #region Commands
 
         private RelayCommand _editFactorsCommand;
+        private RelayCommand _openFileCommand;
+        private RelayCommand _saveFileCommand;
 
         public ICommand EditFactorsCommand
         {
@@ -132,6 +136,66 @@ namespace RCCDTool
 
                 return _editFactorsCommand;
             }
+        }
+
+        public ICommand OpenFileCommand
+        {
+            get
+            {
+                if (_openFileCommand == null)
+                {
+                    _openFileCommand = new RelayCommand(param =>
+                    {
+                        OpenFileDialog openFileDialog = new OpenFileDialog
+                        {
+                            Filter = "FactorSet files (.fac)|*.fac",
+                            DefaultExt = ".fac"
+                        };
+
+                        if (openFileDialog.ShowDialog() == true)
+                        {
+                            _model.LoadFactorSet(openFileDialog.FileName);
+
+                        }
+                    });
+                }
+
+                return _openFileCommand;
+            }
+            
+        }
+
+        public ICommand SaveFileCommand
+        {
+            get
+            {
+                if (_saveFileCommand == null)
+                {
+                    _saveFileCommand = new RelayCommand(param =>
+                    {
+                        if (FactorSet.Rows.Count == 0)
+                        {
+                            MessageBox.Show("Please input factors into the model before saving.", "Please enter data");
+                            return;
+                        }
+
+                        SaveFileDialog saveFileDialog = new SaveFileDialog
+                        {
+                            FileName = "FactorSet",
+                            DefaultExt = ".fac",
+                            Filter = "FactorSet files (.fac)|*.fac"
+                        };
+
+                        if (saveFileDialog.ShowDialog() == true)
+                        {
+                            _model.SaveFactorSet(saveFileDialog.FileName);
+                        }
+                    });
+                }
+
+                return _saveFileCommand;
+            }
+
         }
 
         #endregion

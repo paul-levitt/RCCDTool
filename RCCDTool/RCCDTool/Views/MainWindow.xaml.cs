@@ -32,24 +32,12 @@ namespace RCCDTool
             
         }
 
-        //public MainWindow(string designSelection, IController controller)
-        //{
-            
-        //    InitializeComponent();
-            
-        //    _designSelection = designSelection;
-        //    designLabel.Content += designSelection;
-        //    _controller = controller;
-            
-        //}
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
             //int nPerGroupCalc = (Int32.Parse(totalN.Text) / Int32.Parse(numFactors.Text));
             //nPerGroup.Text = nPerGroupCalc.ToString();
             var dc = FactorsGrid.DataContext;
-            //MessageBox.Show("test");
-            
 
         }
 
@@ -81,42 +69,5 @@ namespace RCCDTool
          
         }
 
-        private void loadFactorSet_Click(object sender, RoutedEventArgs e)
-        {
-            
-            OpenFileDialog openFileDialog = new OpenFileDialog
-            {
-                Filter = "FactorSet files (.fac)|*.fac",
-                DefaultExt = ".fac"
-            };
-
-            if (openFileDialog.ShowDialog() == true)
-            {
-                _controller.LoadFactorSet(openFileDialog.FileName);
-
-                numFactors.Text = _controller.FactorSet?.Rows.Count.ToString();
-            }
-        }
-
-        private void saveFactorSet_Click(object sender, RoutedEventArgs e)
-        {
-            if (_controller.FactorSet.Rows.Count == 0)
-            {
-                MessageBox.Show("Please input factors into the model before saving.", "Please enter data");
-                return;
-            }
-
-            SaveFileDialog saveFileDialog = new SaveFileDialog
-            {
-                FileName = "FactorSet",
-                DefaultExt = ".fac",
-                Filter = "FactorSet files (.fac)|*.fac"
-            };
-            
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                 _controller.SaveFactorSet(saveFileDialog.FileName);   
-            }
-        }
     }
 }

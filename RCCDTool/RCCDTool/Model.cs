@@ -18,14 +18,12 @@ using DataRow = System.Data.DataRow;
 
 namespace RCCDTool
 {
-    class Model : IModel
+    public class Model : IModel
     {
         private static DataTable factorSet;
-        private DataGridControl dgControl;
-        private static DataTable designOutput;
         private static DataSet _researchDesignOutput;
         private static ObservableCollection<string> _designTypes = new ObservableCollection<string> {"Within Subjects Factor", "Between Subjects Factor"};
-        public List<string> Tables { get; set; }
+        
         private IEnumerable<IEnumerable<object>> conditionsCombined;
         private static RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider();
 
@@ -40,6 +38,7 @@ namespace RCCDTool
             Tables = new List<string>();
             Type entityType = typeof(ResearchFactor);
             factorSet = new DataTable(entityType.Name);
+            ResearchFactors = new List<ResearchFactor>();
             PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(entityType);
 
             foreach (PropertyDescriptor prop in properties)
@@ -62,29 +61,26 @@ namespace RCCDTool
 
             //factorSet.Rows.Add(rowTest);
 
-            //dgControl = new DataGridControl
-            //{
-            //    ItemsSource = new DataGridCollectionView(FactorSet.DefaultView)
-            //};
-
         }
 
-        #region Getters/Setters
+        #region Properties
 
+        public List<string> Tables { get; set; }
         public int NumSubjects { get; set; }
+        public List<ResearchFactor> ResearchFactors { get; set; }
+
+        public DataTable FactorSet => factorSet;
+
+        public bool HasData => factorSet != null && factorSet.Rows.Count > 0;
+
+        public int NumFactors => factorSet?.Rows.Count ?? 0;
+
         public DataSet ResearchDesignOutput
         {
             get { return _researchDesignOutput; }
             set { _researchDesignOutput = value; }
             
         }
-        public DataTable FactorSet => factorSet;
-
-        public DataTable DesignOutput => designOutput;
-
-        public bool HasData => factorSet != null && factorSet.Rows.Count > 0;
-
-        public int NumFactors => factorSet?.Rows.Count ?? 0; //wow, how compact!!
 
         #endregion
 
@@ -106,8 +102,6 @@ namespace RCCDTool
 
             factorSet.Rows.Add(row);
            
-            
-            //dgControl.ItemsSource = new DataGridCollectionView(FactorSet.DefaultView);
         }
 
         public void removeFactor(ResearchFactor newFactor)
@@ -132,11 +126,32 @@ namespace RCCDTool
         public void LoadFactorSet(string FilePath)
         {
             //TODO: Implement error handling in the event a garbage file is selected.
+            if (HasData)
+            {
+                FactorSet.Clear();
+                ResearchFactors.Clear();
+                
+            }
+
             XmlTextReader reader = new XmlTextReader(FilePath);
 
             FactorSet.ReadXml(reader);
 
             reader.Close();
+
+            foreach (var row in FactorSet.AsEnumerable())
+            {
+                ResearchFactor factor = new ResearchFactor
+                {
+                    Name = row.Field<string>("Name"),
+                    Labels = row.Field<ObservableCollection<string>>("Labels"),
+                    Levels = row.Field<int>("Levels"),
+                    IsWithinSubjects = row.Field<bool>("IsWithinSubjects"),
+                    IsRandomized = row.Field<bool>("IsRandomized")
+                };
+
+                ResearchFactors.Add(factor);
+            }
         
         }
 
